@@ -38,8 +38,8 @@
   --pill-gray: rgba(80, 80, 80, 0.31); /* nav pill background */
 
   /* ── Scene shades (derived art direction; retheme here too) ─────────────── */
-  --peach-deep: #ff9f73; /* hero gradient top */
-  --peach-soft: #ffb78f; /* hero gradient mid */
+  --peach-deep: #ff9f73; /* deep peach, unused since the hero went flat grey */
+  --peach-soft: #ffb78f; /* soft peach, unused since the hero went flat grey */
   --peach-tint: #ffd9c2; /* soft fills / blobs */
   /* OPT-IN page backdrop gradient (peach at top -> white at bottom). OFF by default
      (the page uses flat --cream). To enable, see the `.page-surface` note in index.css.
@@ -55,23 +55,11 @@
   --folder-front: #3f63ff; /* portfolio folder front flap */
   --news-card: #3a342f; /* About "News & Updates" dark card */
 
-  /* ── Hero mesh (matches the Canva hero plate) ───────────────────────────────
-     Sampled directly from the exported artwork, so the backdrop and the image
-     are the same colours. That is what lets the plate sit in the page without a
-     visible edge on any aspect ratio. Re-sample if the artwork is replaced. */
-  --hero-orange: #fe722d; /* top-left bloom */
-  --hero-amber: #feb14b; /* mid-left */
-  --hero-gold: #fec968; /* lower-left */
-  --hero-rose: #f28c9a; /* bottom-right bloom */
-  --hero-blush: #fbb7b6; /* bottom-right core */
-  --hero-haze: #d0d0d0; /* neutral base through the centre */
-  --hero-mesh:
-    radial-gradient(120% 90% at 0% 0%, var(--hero-orange) 0%, rgba(254, 114, 45, 0) 55%),
-    radial-gradient(90% 70% at 0% 45%, var(--hero-amber) 0%, rgba(254, 177, 75, 0) 60%),
-    radial-gradient(70% 60% at 8% 72%, var(--hero-gold) 0%, rgba(254, 201, 104, 0) 65%),
-    radial-gradient(85% 75% at 100% 100%, var(--hero-rose) 0%, rgba(242, 140, 154, 0) 60%),
-    radial-gradient(60% 50% at 88% 82%, var(--hero-blush) 0%, rgba(251, 183, 182, 0) 60%),
-    var(--hero-haze);
+  /* ── Hero ───────────────────────────────────────────────────────────────────
+     One flat grey, deliberately. The hero is the cut-out figure and nothing
+     else, so the background must not compete with it. Do not reintroduce a
+     gradient here: it was tried and rejected. */
+  --hero-grey: #d0d0d0;
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
   --font-display: 'Fredoka', system-ui, sans-serif; /* swap for 'Goga' */

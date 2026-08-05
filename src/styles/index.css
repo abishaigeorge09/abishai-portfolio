@@ -59,6 +59,35 @@
     font-family: var(--font-display);
   }
 
+  /* Hero reveal: the figure rises out of the floor.
+     Deliberately CSS and NOT a GSAP tween. This is the page's LCP element, and a
+     JS start-state that hides it leaves the hero permanently invisible anywhere
+     the ticker does not run (background tab, restored tab, throttled embed) —
+     which was observed, not theorised. A CSS animation's forwards fill lands on
+     the VISIBLE keyframe, so the worst case here is a static visible hero.
+     Hero.jsx strips this class on animationend so GSAP can own the transform for
+     the scroll scrub; until then the animation deliberately outranks inline styles. */
+  @keyframes hero-rise {
+    from {
+      clip-path: inset(100% 0 0 0);
+      transform: translateY(4%) scale(1.05);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .hero-rise {
+    animation: hero-rise 1.25s var(--ease-out-quart) 0.15s both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-rise {
+      animation: none;
+    }
+  }
+
   /* OPT-IN (off by default): opaque page surface carrying the peach->white backdrop.
      Add this class to the content sheets in App.jsx + Home.jsx (and switch the body
      background to var(--page-surface)) to enable the warm backdrop. Tune the ends via

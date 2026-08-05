@@ -1,88 +1,147 @@
-// Hero - the Canva composition. A gradient mesh backdrop sampled from the
-// artwork itself, with the composed plate centred on top and never cropped.
+// Hero - one flat grey and a cut-out figure. Nothing else.
 //
-// Why the plate is `object-contain` rather than a full-bleed cover: the artwork
-// carries its own typography ("ABISHAI" / "GOSULA" and the intro copy), so any
-// crop cuts words. Containing it keeps every aspect ratio readable, and because
-// --hero-mesh is sampled from the same image the letterboxing is invisible.
+// The artwork's gradient, its pixel-type name and its baked copy are all gone;
+// what ships is the portrait with a real alpha channel standing on
+// var(--hero-grey). Do not put a gradient back behind it.
 //
-// The name and tagline are ALSO rendered as real text (visually hidden) so the
-// page still has a genuine <h1> for search engines and screen readers. Text
-// baked into a picture is text nobody can select, translate or search.
+// It is built to be covered. Home.jsx pins this section (`sticky top-0 z-0`)
+// and floats the cream sheet up over it, so the scroll tween below eases the
+// figure down and back as the sheet climbs. The two read as one gesture rather
+// than two things moving at once.
 //
-// To replace the artwork: export from Canva, regenerate the avif/webp/jpg set
-// into /public/assets/img/, and re-sample --hero-mesh in styles/tokens.css.
+// Heights are svh, never vh. `100vh` is the viewport with the mobile browser
+// chrome hidden, so at first paint anything centred against it sits too low and
+// only settles once you scroll. That was the "not centered till a certain
+// scroll" bug.
 import { useEffect, useRef } from 'react'
+// Importing from lib/gsap is what registers ScrollTrigger, which the scrub below
+// relies on, so keep this import even though only `gsap` is named.
 import { gsap, prefersReducedMotion } from '../lib/gsap'
+import { useIsTouch } from '../lib/useIsTouch'
 
 export function Hero() {
   const section = useRef(null)
-  const plate = useRef(null)
+  const drift = useRef(null) // cursor parallax lives here
+  const figure = useRef(null) // reveal + scroll tweens live here
+  const isTouch = useIsTouch()
 
   useEffect(() => {
     const sec = section.current
-    if (!sec || prefersReducedMotion()) return
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 0.1 })
-      tl.from(plate.current, { opacity: 0, scale: 1.04, y: 18, duration: 1.1, ease: 'power3.out' })
-      tl.to('.hero-cue', { opacity: 1, duration: 0.6 }, '-=0.4')
-    }, sec)
-    return () => ctx.revert()
+    const fig = figure.current
+    if (!sec || !fig || prefersReducedMotion()) return
+
+    let ctx
+    let failsafe = 0
+
+    // The reveal itself is the CSS `hero-rise` animation (see styles/index.css).
+    // Once it finishes we drop the class and let GSAP own the transform, so the
+    // reveal and the scroll scrub never write to it at the same time.
+    const handOver = () => {
+      clearTimeout(failsafe)
+      if (!fig.classList.contains('hero-rise') && ctx) return
+      fig.classList.remove('hero-rise')
+      ctx = gsap.context(() => {
+        gsap.to(fig, {
+          yPercent: 10,
+          scale: 0.95,
+          ease: 'none',
+          scrollTrigger: { start: 0, end: () => window.innerHeight * 0.9, scrub: 0.6 },
+        })
+      }, sec)
+    }
+
+    fig.addEventListener('animationend', handOver, { once: true })
+    // animationend never fires if the animation was skipped entirely (reduced
+    // motion, or a browser that ignored it). The figure is already visible in
+    // that case, so this only makes sure the scrub still gets attached.
+    failsafe = setTimeout(handOver, 2600)
+
+    return () => {
+      clearTimeout(failsafe)
+      fig.removeEventListener('animationend', handOver)
+      ctx?.revert()
+    }
   }, [])
+
+  // Cursor parallax, pointer devices only. Applied to a wrapper so it cannot
+  // collide with the transforms GSAP owns on the figure itself.
+  useEffect(() => {
+    const sec = section.current
+    const el = drift.current
+    if (!sec || !el || isTouch || prefersReducedMotion()) return
+
+    const xTo = gsap.quickTo(el, 'x', { duration: 1.1, ease: 'power3' })
+    const yTo = gsap.quickTo(el, 'y', { duration: 1.1, ease: 'power3' })
+    let raf = 0
+    const onMove = (e) => {
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        const r = sec.getBoundingClientRect()
+        xTo(((e.clientX - r.left) / r.width - 0.5) * -26)
+        yTo(((e.clientY - r.top) / r.height - 0.5) * -14)
+        raf = 0
+      })
+    }
+    const onLeave = () => {
+      xTo(0)
+      yTo(0)
+    }
+    sec.addEventListener('mousemove', onMove, { passive: true })
+    sec.addEventListener('mouseleave', onLeave)
+    return () => {
+      sec.removeEventListener('mousemove', onMove)
+      sec.removeEventListener('mouseleave', onLeave)
+      if (raf) cancelAnimationFrame(raf)
+      gsap.killTweensOf(el)
+    }
+  }, [isTouch])
 
   return (
     <section
       ref={section}
-      className="relative flex min-h-[100svh] w-full flex-col items-center justify-center overflow-hidden"
-      style={{ background: 'var(--hero-mesh)' }}
+      className="relative flex min-h-[100svh] w-full flex-col items-center justify-end overflow-hidden"
+      style={{ backgroundColor: 'var(--hero-grey)' }}
     >
-      {/* The real heading. Reaches search and assistive tech, not the eye,
-          because the artwork already shows it. */}
-      <h1 className="sr-only">
-        Abishai Gosula. Helping ideas become real products through AI, embedded vision, and software.
-      </h1>
+      {/* The page still needs one real heading even while the visible line is
+          empty, so it lives here for search and screen readers. */}
+      <h1 className="sr-only">Abishai Gosula</h1>
 
-      <picture>
-        <source
-          type="image/avif"
-          sizes="100vw"
-          srcSet="/assets/img/hero-1366.avif 1366w, /assets/img/hero-2732.avif 2732w"
-        />
-        <source
-          type="image/webp"
-          sizes="100vw"
-          srcSet="/assets/img/hero-1366.webp 1366w, /assets/img/hero-2732.webp 2732w"
-        />
-        <img
-          ref={plate}
-          src="/assets/img/hero-1366.jpg"
-          width={2732}
-          height={1536}
-          fetchPriority="high"
-          decoding="async"
-          alt="Abishai Gosula, beside the words: I'm Abishai Gosula. Helping ideas become real products through AI, embedded vision, and software."
-          className="relative z-10 w-full max-w-[1600px] select-none object-contain md:max-h-[100svh]"
-        />
-      </picture>
+      {/* ─── HERO LINE SLOT ───────────────────────────────────────────────────
+          Intentionally empty. The line is a later decision. Drop the copy in
+          here and it lands top-left over the figure, in near-black ink, with
+          the layout and the figure sizing below already accounting for it.
+          Nothing else needs to change.
+          ──────────────────────────────────────────────────────────────────── */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-20 mx-auto w-full max-w-[1600px] px-6 pt-24 text-ink md:px-10 md:pt-28"
+      />
 
-      {/* Phones only. The artwork is 16:9, so on a 430px screen its baked intro
-          copy lands around 5px and cannot be read. Cropping is not the answer:
-          "ABISHAI" and "GOSULA" span most of the width, and a phone-shaped
-          window only exposes about 46% of it, so every crop slices a word in
-          half. The plate therefore stays whole (the names still read large) and
-          the sentence returns here as real, selectable text. */}
-      <div className="relative z-10 mt-7 w-full max-w-[34rem] px-7 text-ink md:hidden">
-        <p className="font-display text-xl font-bold italic">I&rsquo;m Abishai Gosula!</p>
-        <p className="mt-2 text-base leading-relaxed">
-          Helping ideas become real products through AI, embedded vision, and software.
-        </p>
-      </div>
-
-      <div className="hero-cue absolute bottom-8 left-1/2 z-20 -translate-x-1/2 opacity-0">
-        <span className="flex flex-col items-center gap-2 text-ink/70">
-          <span className="text-xs uppercase tracking-widest">Scroll</span>
-          <span className="h-8 w-px bg-gradient-to-b from-ink/60 to-transparent" />
-        </span>
+      <div ref={drift} className="relative z-10 flex w-full justify-center will-change-transform">
+        <div className="h-[60svh] w-full max-w-[38rem] md:h-[90svh] md:max-w-[52rem]">
+          <picture>
+            <source
+              type="image/avif"
+              sizes="(min-width: 768px) 52rem, 100vw"
+              srcSet="/assets/img/portrait-900.avif 900w, /assets/img/portrait-1800.avif 1800w"
+            />
+            <source
+              type="image/webp"
+              sizes="(min-width: 768px) 52rem, 100vw"
+              srcSet="/assets/img/portrait-900.webp 900w, /assets/img/portrait-1800.webp 1800w"
+            />
+            <img
+              ref={figure}
+              src="/assets/img/portrait-900.png"
+              width={1889}
+              height={1913}
+              fetchPriority="high"
+              decoding="async"
+              alt="Abishai Gosula"
+              className="hero-rise h-full w-full select-none object-contain object-bottom will-change-transform"
+            />
+          </picture>
+        </div>
       </div>
     </section>
   )

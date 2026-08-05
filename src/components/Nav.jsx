@@ -128,7 +128,7 @@ export function Nav() {
       {/* center cluster - individual floating glass buttons; bottom on mobile, top on desktop */}
       <div
         data-nav-skip
-        className="pointer-events-auto fixed bottom-6 left-1/2 z-nav flex -translate-x-1/2 items-center gap-3 md:bottom-auto md:top-4 md:gap-2"
+        className="pointer-events-auto fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-1/2 z-nav flex -translate-x-1/2 items-center gap-3 md:bottom-auto md:top-4 md:gap-2"
       >
         <PillLink to="/about" dark={clusterDark}>
           About

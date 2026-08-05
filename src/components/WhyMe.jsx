@@ -87,7 +87,7 @@ export function WhyMe() {
   }, [])
 
   return (
-    <section ref={section} className="relative h-screen w-full overflow-hidden bg-[var(--scene-dark)] text-cream">
+    <section ref={section} className="relative h-[100svh] w-full overflow-hidden bg-[var(--scene-dark)] text-cream">
       {/* ONE full-bleed photo of AG - TODO: drop /assets/img/whyme.jpg */}
       <div ref={photo} className="absolute inset-0 scale-[1.06]">
         {failed ? (

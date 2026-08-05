@@ -42,7 +42,7 @@ export function AboutHero() {
   }, [])
 
   return (
-    <section ref={root} className="relative flex min-h-screen flex-col overflow-hidden">
+    <section ref={root} className="relative flex min-h-[100svh] flex-col overflow-hidden">
       {/* soft accents */}
       <div className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-peach/25 blur-3xl" aria-hidden="true" />
       <div className="pointer-events-none absolute -left-24 bottom-24 h-72 w-72 rounded-full bg-[var(--peach-tint)]/40 blur-3xl" aria-hidden="true" />

@@ -20,14 +20,14 @@ export default function Home() {
     <>
       {/* 1, hero - pinned BEHIND, so the content sheet below lifts up and covers it
           (same "expose" feeling as the reveal footer, but at the top of the page). */}
-      <div className="sticky top-0 z-0 h-screen overflow-hidden">
+      <div className="sticky top-0 z-0 h-[100svh] overflow-hidden">
         <Hero />
       </div>
 
       {/* the rest of the page is one sheet that rises over the pinned hero */}
       <div className="relative z-10 rounded-t-[2.5rem] bg-cream shadow-[0_-16px_50px_-34px_rgba(51,51,51,0.25)]">
       {/* 2, personal headline with floating blobs (reference-style) */}
-      <section className="relative flex min-h-screen flex-col items-center overflow-hidden px-5 pt-28 text-center md:pt-36">
+      <section className="relative flex min-h-[100svh] flex-col items-center overflow-hidden px-5 pt-28 text-center md:pt-36">
         <div className="relative z-10 max-w-3xl">
           <Reveal variant="mask">
             <h2 className="font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold leading-[1.05] text-gray-warm">
