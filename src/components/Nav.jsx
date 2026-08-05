@@ -34,11 +34,19 @@ function PillLink({ to, dark, children }) {
       className={({ isActive }) =>
         [
           'rounded-full border px-4 py-2 font-display text-sm font-semibold backdrop-blur-md transition-transform duration-300 ease-spring-pill hover:scale-110',
+          // Both idle variants carry a real fill, not a 5% tint. The luminance
+          // probe below reads element BACKGROUND COLOURS, so it is blind to
+          // <img> content: over the hero it sees the grey section behind the
+          // cut-out and picks dark text while the actual pixels are a near-black
+          // shirt, which made "About" vanish completely. A pill that is opaque
+          // enough to read on either background turns that class of mistake
+          // (including the probe's 250ms polling lag) from illegible into merely
+          // slightly-off-tone.
           isActive
             ? 'border-transparent bg-ink/80 text-cream'
             : dark
-              ? 'border-cream/30 bg-cream/10 text-cream'
-              : 'border-ink/20 bg-ink/5 text-ink',
+              ? 'border-cream/25 bg-ink/55 text-cream'
+              : 'border-ink/15 bg-cream/75 text-ink',
         ].join(' ')
       }
     >

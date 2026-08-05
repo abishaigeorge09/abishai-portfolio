@@ -60,6 +60,12 @@
      else, so the background must not compete with it. Do not reintroduce a
      gradient here: it was tried and rejected. */
   --hero-grey: #d0d0d0;
+  /* Gap from the top of the viewport to the top of his hair. The figure is sized
+     by HEIGHT (100svh minus this), so the head lands just under the nav cluster
+     instead of floating below it. The cluster sits at top-4 and is ~40px tall,
+     so this leaves roughly 16px of clearance. Change this one value to move the
+     head up or down. */
+  --hero-top-gap: 3.25rem;
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
   --font-display: 'Fredoka', system-ui, sans-serif; /* swap for 'Goga' */

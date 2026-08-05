@@ -117,17 +117,23 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 top-0 z-20 mx-auto w-full max-w-[1600px] px-6 pt-24 text-ink md:px-10 md:pt-28"
       />
 
-      <div ref={drift} className="relative z-10 flex w-full justify-center will-change-transform">
-        <div className="h-[60svh] w-full max-w-[38rem] md:h-[90svh] md:max-w-[52rem]">
+      <div ref={drift} className="relative z-10 flex w-full justify-center">
+        {/* Sized by HEIGHT, not width. The crop is tight to the subject, so the
+            top of this box is the top of his hair: it lands exactly
+            --hero-top-gap from the top of the viewport, just under the nav.
+            The figure is ~square, so on a phone it is wider than the screen and
+            the section's overflow-hidden crops the shoulders. That is the trade:
+            head under the nav beats seeing the full shoulder line. */}
+        <div className="h-[calc(100svh-var(--hero-top-gap))]">
           <picture>
             <source
               type="image/avif"
-              sizes="(min-width: 768px) 52rem, 100vw"
+              sizes="(min-width: 768px) 900px, 800px"
               srcSet="/assets/img/portrait-900.avif 900w, /assets/img/portrait-1800.avif 1800w"
             />
             <source
               type="image/webp"
-              sizes="(min-width: 768px) 52rem, 100vw"
+              sizes="(min-width: 768px) 900px, 800px"
               srcSet="/assets/img/portrait-900.webp 900w, /assets/img/portrait-1800.webp 1800w"
             />
             <img
@@ -138,7 +144,7 @@ export function Hero() {
               fetchPriority="high"
               decoding="async"
               alt="Abishai Gosula"
-              className="hero-rise h-full w-full select-none object-contain object-bottom will-change-transform"
+              className="hero-rise block h-full w-auto max-w-none select-none"
             />
           </picture>
         </div>
