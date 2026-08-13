@@ -12,6 +12,39 @@ import Home from './pages/Home'
 import Work from './pages/Work'
 import About from './pages/About'
 
+// Per-route SEO: title, description, and canonical follow the route (crawlers
+// that execute JS pick these up; the defaults in index.html cover the rest).
+const ROUTE_META = {
+  '/': {
+    title: 'Abishai Gosula — Founder, builder & CS student',
+    description:
+      'Abishai Gosula — a 21-year-old founder and computer-science student, leading teams and shipping products people remember. Founder of Elsheph Systems; built synth, GMV Live, Benji, and Atlitos; Berkeley SkyDeck.',
+  },
+  '/work': {
+    title: 'Work — Abishai Gosula',
+    description:
+      'Selected work by Abishai Gosula: synth, GMV Live, Benji, Atlitos, Elsheph Systems, and an AIoT air hockey assistant. Founder-led products across sports tech and AI.',
+  },
+  '/about': {
+    title: 'About — Abishai Gosula',
+    description:
+      'About Abishai Gosula: founder and CS student from Hyderabad, building at the intersection of AI, embedded vision, and software. SRM, UC Berkeley Startup Semester, Berkeley SkyDeck.',
+  },
+}
+
+function RouteMeta() {
+  const location = useLocation()
+  useEffect(() => {
+    const meta = ROUTE_META[location.pathname] || ROUTE_META['/']
+    document.title = meta.title
+    document.querySelector('meta[name="description"]')?.setAttribute('content', meta.description)
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute('href', `https://abishaigosula.com${location.pathname === '/' ? '/' : location.pathname}`)
+  }, [location.pathname])
+  return null
+}
+
 // Fade/slide page transitions via Framer Motion; GSAP owns scroll-scrubbing inside pages.
 function Page({ children }) {
   const reduce = useReducedMotion()
@@ -42,6 +75,7 @@ export default function App() {
   return (
     <>
       <IntroLoader />
+      <RouteMeta />
       <Cursor />
       <KineticScroll />
       <Nav />
