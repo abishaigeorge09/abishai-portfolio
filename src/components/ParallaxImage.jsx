@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap, prefersReducedMotion } from '../lib/gsap'
 import { GradientScene } from './GradientScene'
 
-export function ParallaxImage({ src, alt, label, tone = 'warm', className = '' }) {
+export function ParallaxImage({ src, alt, label, tone = 'warm', className = '', mono = false }) {
   const mask = useRef(null)
   const img = useRef(null)
   const [failed, setFailed] = useState(!src)
@@ -36,6 +36,7 @@ export function ParallaxImage({ src, alt, label, tone = 'warm', className = '' }
           <img
             src={src}
             alt={alt}
+            data-mono-gray={mono ? '1' : undefined}
             className="h-full w-full object-cover"
             loading="lazy"
             onError={() => setFailed(true)}

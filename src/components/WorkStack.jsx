@@ -22,6 +22,7 @@ function Folder({ p }) {
     <div className="relative w-[260px] md:w-[300px]">
       {/* tab */}
       <div
+        data-mono-tab
         className="absolute -top-6 left-6 rounded-t-xl px-4 py-2 font-display text-sm font-bold text-cream"
         style={{ background: p.accent }}
       >
@@ -31,8 +32,8 @@ function Folder({ p }) {
       <div className="overflow-hidden rounded-2xl rounded-tl-none border border-ink/10 bg-cream shadow-[0_24px_60px_-20px_rgba(0,0,0,0.35)]">
         {/* brand-art strip */}
         <div className="relative h-40 overflow-hidden bg-[var(--scene-tile)]">
-          <div className="absolute left-[12%] top-[14%] h-2/3 w-2/3 rounded-full blur-2xl" style={{ background: hexToRgba(p.accent, 0.75) }} />
-          <div className="absolute right-[8%] top-[28%] h-1/2 w-1/2 rounded-full blur-2xl" style={{ background: 'rgba(255,188,149,0.6)' }} />
+          <div data-mono-glow1 className="absolute left-[12%] top-[14%] h-2/3 w-2/3 rounded-full blur-2xl" style={{ background: hexToRgba(p.accent, 0.75) }} />
+          <div data-mono-glow2 className="absolute right-[8%] top-[28%] h-1/2 w-1/2 rounded-full blur-2xl" style={{ background: 'rgba(255,188,149,0.6)' }} />
           <div
             className="absolute inset-0"
             style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px)', backgroundSize: '12px 12px' }}

@@ -55,7 +55,7 @@ export function FolderIcons({ label = 'Portfolio', fileTitle = 'Awards & Certifi
         ref={paper}
         className="absolute bottom-3 left-1/2 h-28 w-[88%] -translate-x-1/2 overflow-hidden rounded-md bg-cream opacity-65 shadow-lg"
       >
-        <div className="flex items-center gap-1.5 border-b border-ink/10 px-2.5 py-1.5">
+        <div data-mono-traffic className="flex items-center gap-1.5 border-b border-ink/10 px-2.5 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-[#ff6159]" />
           <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]" />
           <span className="h-1.5 w-1.5 rounded-full bg-[#28c840]" />

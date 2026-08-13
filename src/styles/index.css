@@ -9,9 +9,13 @@
     /* Lenis drives scrolling; keep native smooth off. */
     scroll-behavior: auto;
     /* Lock sideways rubber-band so the fixed footer can't peek on touch devices.
-       NOTE: do NOT set overflow-x here — overflow on <html> breaks position:sticky,
-       which powers the hero "expose". overscroll-behavior alone is enough; the body
-       clips any horizontal overflow. */
+       `overflow-x: hidden` on <html> breaks position:sticky (tested, see body
+       rule below for the previous approach) — but `overflow-x: clip` does NOT
+       turn <html> into a scroll container the same way, so it is safe here and
+       is what actually stops `window.scrollTo`/gesture horizontal scroll from
+       reaching a non-zero scrollX when hero wheel geometry sits outside the
+       viewport at extreme angles (body's overflow-x alone was not enough). */
+    overflow-x: clip;
     overscroll-behavior-x: none;
   }
 
@@ -25,7 +29,13 @@
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
+    /* `clip` (not `hidden`) on purpose: hidden still lets JS/gesture scroll the
+       viewport to a non-zero scrollX in some engines (the hero's 3D screen
+       wheel can lay geometry outside the viewport at extreme angles); clip
+       disables horizontal scrolling outright while leaving vertical scroll
+       untouched. Scoped to the x-axis only, so it does not affect body's
+       normal (vertical) scroll container status. */
+    overflow-x: clip;
     overscroll-behavior-x: none;
     max-width: 100vw;
   }
@@ -105,7 +115,8 @@
   }
 }
 
-/* ---- The ONLY CSS @keyframes allowed: loading spinner ---- */
+/* ---- The ONLY CSS @keyframes allowed: loading spinner, hero typewriter caret,
+   hero letter pop-in ---- */
 @keyframes ag-spin {
   to {
     transform: rotate(360deg);
@@ -118,6 +129,80 @@
   border: 3px solid rgba(150, 144, 140, 0.3);
   border-top-color: var(--peach);
   animation: ag-spin 0.8s linear infinite;
+}
+
+/* Hero headline caret: solid while typing, bounded double-blink then hidden
+   once the word settles (see Hero.jsx TypewriterArcWord). */
+@keyframes caret-solid-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.caret-blink {
+  animation: caret-solid-blink 1s step-end infinite;
+}
+@keyframes caret-blink-twice {
+  0%,
+  24% {
+    opacity: 1;
+  }
+  25%,
+  49% {
+    opacity: 0;
+  }
+  50%,
+  74% {
+    opacity: 1;
+  }
+  75%,
+  100% {
+    opacity: 0;
+  }
+}
+.caret-blink-twice {
+  animation: caret-blink-twice 0.8s steps(1) 1 forwards;
+}
+
+/* Hero headline glyph: subtle pop-in as each typed letter mounts. */
+@keyframes letter-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.letter-pop {
+  animation: letter-pop 0.16s ease-out both;
+}
+
+/* ---- .theme-mono literal-color overrides (Home page only; see tokens.css) ----
+   Components that read a literal hex value instead of a CSS var (per-project
+   accent colors, decorative gradient blobs, mac traffic-light dots, the custom
+   cursor's inline SVG stroke, and the two lazy-loaded photos) get forced to
+   grayscale here, scoped to :root.theme-mono so no other route is touched. */
+:root.theme-mono [data-mono-tab] {
+  background: #1a1a1a !important;
+}
+:root.theme-mono [data-mono-glow1] {
+  background: rgba(20, 20, 20, 0.45) !important;
+}
+:root.theme-mono [data-mono-glow2] {
+  background: rgba(120, 120, 120, 0.35) !important;
+}
+:root.theme-mono [data-mono-blob] {
+  background: radial-gradient(circle at 35% 30%, #fff, #d9d9d9 72%) !important;
+}
+:root.theme-mono [data-mono-traffic] span {
+  background: #444 !important;
+}
+:root.theme-mono [data-mono-gray] {
+  filter: grayscale(1);
+}
+:root.theme-mono .cursor-jm-icon svg path {
+  stroke: #444 !important;
 }
 
 /* Reduced motion: kill non-essential animation. */

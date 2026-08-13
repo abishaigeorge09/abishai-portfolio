@@ -30,11 +30,16 @@
 :root {
   /* ── Palette (core brand) ───────────────────────────────────────────────── */
   --cream: #faf6ef; /* page background */
+  --cream-rgb: 250 246 239; /* rgb triplet so Tailwind's bg-cream/NN opacity modifiers work */
   --peach: #ffbc95; /* signature accent */
+  --peach-rgb: 255 188 149;
   --blue: #2e54fe; /* brand dot, folder, links */
+  --blue-rgb: 46 84 254;
   --gray-warm: #96908c; /* secondary / un-filled headline text */
+  --gray-warm-rgb: 150 144 140;
   --slate: #6d717c; /* cool slate - closing CTA headline + "Let's talk" */
   --ink: #333333; /* body text */
+  --ink-rgb: 51 51 51;
   --pill-gray: rgba(80, 80, 80, 0.31); /* nav pill background */
 
   /* ── Scene shades (derived art direction; retheme here too) ─────────────── */
@@ -75,4 +80,41 @@
   --ease-spring-pill: cubic-bezier(0.275, 2.254, 0.281, 0.996);
   --ease-spring-social: cubic-bezier(0.292, 1.932, 0.281, 0.996);
   --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* ============================================================================
+   MONO THEME - Home page only. Toggled by Home.jsx adding/removing the
+   `theme-mono` class on <html> (document.documentElement) on mount/unmount.
+   Re-points the accent variables to black/white/gray so every var-backed color
+   (Tailwind's cream/peach/blue/gray-warm/ink utilities, plus every component
+   that reads var(--slate)/var(--scene-*)/var(--folder-*) directly) follows
+   automatically. Components that use LITERAL hex (bypassing the vars, e.g.
+   per-project accent colors, decorative blob gradients) are overridden
+   separately in index.css via [data-mono-*] attribute selectors scoped under
+   :root.theme-mono, so About/Work (which never get the class) are untouched.
+   ============================================================================ */
+:root.theme-mono {
+  --cream: #ffffff;
+  --cream-rgb: 255 255 255;
+  --peach: #e0e0e0;
+  --peach-rgb: 224 224 224;
+  --blue: #111111;
+  --blue-rgb: 17 17 17;
+  --gray-warm: #8c8c8c;
+  --gray-warm-rgb: 140 140 140;
+  --ink: #111111;
+  --ink-rgb: 17 17 17;
+  --slate: #2a2a2a;
+  --peach-deep: #2a2a2a;
+  --peach-soft: #cfcfcf;
+  --peach-tint: #e6e6e6;
+  --surface-top: #f2f2f2;
+  --surface-bottom: #ffffff;
+  --scene-dark: #0d0d0d;
+  --scene-tile: #1a1a1a;
+  --scene-cool: #141414;
+  --reveal-gray: #3a3a3a;
+  --folder-back: #1a1a1a;
+  --folder-front: #2b2b2b;
+  --news-card: #262626;
 }

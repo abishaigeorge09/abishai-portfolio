@@ -44,16 +44,16 @@ export function FloatingBlobs({ className = '' }) {
     <div ref={root} className={`pointer-events-none ${className}`} aria-hidden="true">
       <div ref={drift} className="absolute inset-0">
         {/* large left sphere */}
-        <div className="fb-item absolute left-[-4%] top-[6%] h-44 w-44 rounded-full md:h-72 md:w-72"
+        <div data-mono-blob className="fb-item absolute left-[-4%] top-[6%] h-44 w-44 rounded-full md:h-72 md:w-72"
           style={{ background: sphere('35% 30%', '#ffd9c2'), boxShadow: '0 30px 80px -20px rgba(0,0,0,0.16)' }} />
         {/* right rounded blob */}
-        <div className="fb-item absolute right-[4%] top-[18%] h-40 w-40 rounded-[42%] md:h-64 md:w-64"
+        <div data-mono-blob className="fb-item absolute right-[4%] top-[18%] h-40 w-40 rounded-[42%] md:h-64 md:w-64"
           style={{ background: sphere('60% 30%', '#ffbc95'), boxShadow: '0 30px 80px -20px rgba(0,0,0,0.18)' }} />
         {/* center-bottom sphere */}
-        <div className="fb-item absolute bottom-[2%] left-[42%] h-28 w-28 rounded-full md:h-44 md:w-44"
+        <div data-mono-blob className="fb-item absolute bottom-[2%] left-[42%] h-28 w-28 rounded-full md:h-44 md:w-44"
           style={{ background: sphere('40% 35%', '#ffe0cc') }} />
         {/* capsule */}
-        <div className="fb-item absolute left-[34%] top-[44%] h-12 w-28 rounded-full md:h-16 md:w-44"
+        <div data-mono-blob className="fb-item absolute left-[34%] top-[44%] h-12 w-28 rounded-full md:h-16 md:w-44"
           style={{ background: sphere('30% 30%', '#e9e2db') }} />
         {/* glyphs */}
         <span className="fb-item absolute left-[26%] top-[52%] h-5 w-5 rounded-full bg-blue" />

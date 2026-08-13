@@ -93,7 +93,14 @@ export function WhyMe() {
         {failed ? (
           <GradientScene tone="warm" rounded="rounded-none" className="absolute inset-0 h-full w-full" label="PORTRAIT" />
         ) : (
-          <img src="/assets/img/whyme.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" onError={() => setFailed(true)} />
+          <img
+            src="/assets/img/whyme.jpg"
+            alt=""
+            aria-hidden="true"
+            data-mono-gray="1"
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={() => setFailed(true)}
+          />
         )}
       </div>
       {/* warm wash: dark on the left for legible text, photo breathing on the right */}

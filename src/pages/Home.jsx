@@ -3,8 +3,10 @@
 // hero (pinned, content sheet lifts over it) -> manifesto -> selected work (stack) ->
 // recognition/Portfolio folder -> "I sweat the details" parallax ->
 // perspective + sharp instincts (pinned, WhyMe) -> CTA -> footer (shared).
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Hero } from '../components/Hero'
+import { ExplorePill } from '../components/ExplorePill'
 import { FillHeadline } from '../components/FillHeadline'
 import { WorkStack } from '../components/WorkStack'
 import { Reveal } from '../components/Reveal'
@@ -16,16 +18,28 @@ import { FloatingBlobs } from '../components/FloatingBlobs'
 import { CtaPanel } from '../components/CtaPanel'
 
 export default function Home() {
+  // Mono theme: Home reads entirely black/white/gray. Toggled at the document
+  // root (rather than a wrapper class) because the custom cursor and Nav are
+  // mounted at the App level, outside Home's own subtree — see tokens.css
+  // `:root.theme-mono` and index.css's `[data-mono-*]` overrides.
+  useEffect(() => {
+    document.documentElement.classList.add('theme-mono')
+    return () => document.documentElement.classList.remove('theme-mono')
+  }, [])
+
   return (
     <>
       {/* 1, hero - pinned BEHIND, so the content sheet below lifts up and covers it
-          (same "expose" feeling as the reveal footer, but at the top of the page). */}
-      <div className="sticky top-0 z-0 h-[100svh] overflow-hidden">
+          (same "expose" feeling as the reveal footer, but at the top of the page).
+          data-hero-pin lets ExplorePill's ScrollTrigger share this exact pin span. */}
+      <div data-hero-pin className="sticky top-0 z-0 h-[100svh] overflow-hidden">
         <Hero />
       </div>
 
       {/* the rest of the page is one sheet that rises over the pinned hero */}
       <div className="relative z-10 rounded-t-[2.5rem] bg-cream shadow-[0_-16px_50px_-34px_rgba(51,51,51,0.25)]">
+      {/* explore pill - re-anchored into the flow, rides up + fades with the sheet */}
+      <ExplorePill />
       {/* 2, personal headline with floating blobs (reference-style) */}
       <section className="relative flex min-h-[100svh] flex-col items-center overflow-hidden px-5 pt-28 text-center md:pt-36">
         <div className="relative z-10 max-w-3xl">
@@ -97,6 +111,7 @@ export default function Home() {
             src="/assets/img/desk-photo.jpg"
             alt="Abishai at his desk"
             label="DESK PHOTO"
+            mono
             className="h-[42vh] min-h-[300px] md:h-[70vh] md:min-h-[460px]"
           />
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center">

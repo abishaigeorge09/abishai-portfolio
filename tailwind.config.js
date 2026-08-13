@@ -5,11 +5,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        cream: '#FAF6EF',
-        peach: '#FFBC95',
-        blue: '#2E54FE',
-        'gray-warm': '#96908C',
-        ink: '#333333',
+        // rgb(var(--x-rgb) / <alpha-value>) keeps opacity modifiers (bg-peach/60,
+        // text-ink/70, …) working while letting `.theme-mono` (tokens.css)
+        // retarget every one of these utilities to black/white/gray at once.
+        cream: 'rgb(var(--cream-rgb) / <alpha-value>)',
+        peach: 'rgb(var(--peach-rgb) / <alpha-value>)',
+        blue: 'rgb(var(--blue-rgb) / <alpha-value>)',
+        'gray-warm': 'rgb(var(--gray-warm-rgb) / <alpha-value>)',
+        ink: 'rgb(var(--ink-rgb) / <alpha-value>)',
       },
       fontFamily: {
         // --font-display defaults to a free geometric/rounded heavy face.
