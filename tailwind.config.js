@@ -17,6 +17,8 @@ export default {
         // updating the @font-face + --font-display var in src/styles/tokens.css.
         display: ['var(--font-display)', 'system-ui', 'sans-serif'],
         body: ['var(--font-body)', 'Arial', 'system-ui', 'sans-serif'],
+        // Hero arched headline only. Loaded via index.html Google Fonts link.
+        anton: ['Anton', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         // Giant fluid hero name up to ~228px on desktop.
