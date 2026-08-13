@@ -54,13 +54,22 @@ export function ExplorePill() {
         type="button"
         onClick={scrollToNext}
         aria-label="Explore"
-        className="group -mt-[92px] flex h-[130px] w-[58px] flex-col items-center rounded-full bg-ink pt-[18px] text-cream shadow-[0_18px_40px_-18px_rgba(17,17,17,0.55)] transition-all duration-300 ease-spring-pill hover:-translate-y-1.5 hover:shadow-[0_24px_50px_-18px_rgba(17,17,17,0.65)]"
+        className="group -mt-[68px] inline-flex h-12 items-center gap-3 rounded-full bg-ink pl-7 pr-2 text-cream shadow-[0_16px_40px_-16px_rgba(17,17,17,0.55)] transition-all duration-300 ease-spring-pill hover:-translate-y-1 hover:bg-blue hover:shadow-[0_22px_48px_-16px_rgba(46,84,254,0.55)]"
       >
-        <span className="font-display text-[10px] font-semibold uppercase tracking-[0.22em]">Explore</span>
-        {/* long arrow: stem + head, slides down on hover like the reference */}
-        <span aria-hidden="true" className="mt-2.5 flex flex-col items-center transition-transform duration-500 ease-spring-pill group-hover:translate-y-1.5">
-          <svg width="12" height="30" viewBox="0 0 12 30" fill="none" className="animate-bounce [animation-duration:1.6s]">
-            <path d="M6 1v25M1.5 21.5L6 26.5l4.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <span className="font-display text-[11px] font-semibold uppercase tracking-[0.24em]">Explore</span>
+        {/* arrow chip: white disc, arrow nudges down on hover */}
+        <span
+          aria-hidden="true"
+          className="grid h-8 w-8 place-items-center rounded-full bg-cream text-ink transition-transform duration-300 ease-spring-pill group-hover:rotate-0 group-hover:scale-105"
+        >
+          <svg
+            width="13"
+            height="14"
+            viewBox="0 0 13 14"
+            fill="none"
+            className="transition-transform duration-300 ease-spring-pill group-hover:translate-y-0.5"
+          >
+            <path d="M6.5 1v10M2 7.5L6.5 12 11 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
       </button>
