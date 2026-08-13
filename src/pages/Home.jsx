@@ -35,7 +35,7 @@ export default function Home() {
         <div className="relative z-10 max-w-3xl">
           <Reveal variant="mask">
             <h2 className="font-display text-[clamp(2.25rem,5.5vw,4.5rem)] font-bold leading-[1.05] text-gray-warm">
-              20 years old, building products and{' '}
+              21 years old, building products and{' '}
               <span className="inline-block rounded-full bg-peach px-4 pb-1 pt-0.5 text-ink">leading</span>{' '}
               the people behind them.
             </h2>
