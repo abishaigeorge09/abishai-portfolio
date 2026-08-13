@@ -3,7 +3,6 @@
 // hero (pinned, content sheet lifts over it) -> manifesto -> selected work (stack) ->
 // recognition/Portfolio folder -> "I sweat the details" parallax ->
 // perspective + sharp instincts (pinned, WhyMe) -> CTA -> footer (shared).
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Hero } from '../components/Hero'
 import { ExplorePill } from '../components/ExplorePill'
@@ -18,15 +17,6 @@ import { FloatingBlobs } from '../components/FloatingBlobs'
 import { CtaPanel } from '../components/CtaPanel'
 
 export default function Home() {
-  // Mono theme: Home reads entirely black/white/gray. Toggled at the document
-  // root (rather than a wrapper class) because the custom cursor and Nav are
-  // mounted at the App level, outside Home's own subtree — see tokens.css
-  // `:root.theme-mono` and index.css's `[data-mono-*]` overrides.
-  useEffect(() => {
-    document.documentElement.classList.add('theme-mono')
-    return () => document.documentElement.classList.remove('theme-mono')
-  }, [])
-
   return (
     <>
       {/* 1, hero - pinned BEHIND, so the content sheet below lifts up and covers it
@@ -37,7 +27,7 @@ export default function Home() {
       </div>
 
       {/* the rest of the page is one sheet that rises over the pinned hero */}
-      <div className="relative z-10 rounded-t-[2.5rem] bg-cream shadow-[0_-16px_50px_-34px_rgba(51,51,51,0.25)]">
+      <div className="relative z-10 rounded-t-[2.5rem] bg-white shadow-[0_-16px_50px_-34px_rgba(51,51,51,0.25)]">
       {/* explore pill - re-anchored into the flow, rides up + fades with the sheet */}
       <ExplorePill />
       {/* 2, personal headline with floating blobs (reference-style) */}

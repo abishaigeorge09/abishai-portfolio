@@ -1,28 +1,30 @@
-// Hero - frame-by-frame replica of s0animation.com/design's hero, measured
-// from a recorded video of the live site (frames in the session's tmp dir):
-// - The card gallery is a HORIZONTAL TRACK, not an auto-spinning wheel: it is
-//   static at idle and moves only from user input (pointer drag with fling
-//   inertia, or horizontal wheel/trackpad deltas), wrapping infinitely.
-//   Cards are uniform portrait phones on a ~310px pitch; the pair leaving the
-//   viewport renders slightly larger and defocused (out-of-focus foreground).
-// - The headline is a giant, gently bowed Anton line that cycles words with a
-//   per-letter pop swap (old letters lift out, new letters pop in) while the
-//   character flashes to a solid silhouette for a beat (the ref flashes red;
-//   this site is mono, so it flashes ink).
-// - Kickers type in once on load; the EXPLORE pill lives in the page flow
-//   (ExplorePill.jsx) and rides up with the sheet.
+// Hero - matched against the founder's screen recording of
+// s0animation.com/design (frames in the session tmp dir). The mechanics that
+// recording proves:
+// - Horizontal card TRACK: perfectly still at idle; moves only from pointer
+//   drag (fling + coast) or horizontal wheel/trackpad deltas; wraps
+//   infinitely; uniform portrait cards on a ~255px pitch; the leaving pair
+//   grows slightly and defocuses. COLOR cards on a white ground.
+// - The rail BOWS with vertical cursor movement (cursor high/low bends the
+//   curve up/down; each card tilts along the curve tangent).
+// - Headline: cycling first word + constant second word, both on one gently
+//   bowed Anton line; the swap is a per-letter pop; the character flashes a
+//   solid brand-blue silhouette at the swap instant.
+// - Scroll exit is a ZOOM: title and cards scale up and defocus as the sheet
+//   arrives (not a lift-away).
+// The load-in waits for the intro loader's `intro:done` event (3s fallback).
 // Heights are svh, never vh (mobile browser chrome reflow).
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { gsap, ScrollTrigger, prefersReducedMotion } from '../lib/gsap'
 import { useIsTouch } from '../lib/useIsTouch'
 import { heroCards } from '../data/heroCards'
 
-const WORDS = ['FOUNDER', 'BUILDER', 'ENGINEER']
+const CYCLE_WORDS = ['PRODUCT', 'STARTUP', 'VENTURE']
+const CONSTANT_WORD = 'BUILDER'
 const WORD_MS = 4000
 
 // ---------------------------------------------------------------------------
-// Bowed headline with per-letter pop swap (measured: subtle arc, ends dip
-// ~25px and rotate a few degrees; swap is pop-in-place, not typing)
+// Bowed two-word headline with per-letter pop swap on the first word
 // ---------------------------------------------------------------------------
 
 function arcTransform(t, mobile) {
@@ -31,13 +33,40 @@ function arcTransform(t, mobile) {
   return { y, rotate: (mobile ? 5 : 7) * t * 2, skew: (mobile ? 1.5 : 3) * t }
 }
 
-function PopSwapArcWord({ mobile, onFirstWordDone, onSwap }) {
+function ArcGlyph({ ch, t, mobile, cyc, wordKey, idx }) {
+  const { y, rotate, skew } = arcTransform(t, mobile)
+  return (
+    <span
+      className="arc-glyph inline-block will-change-transform"
+      style={{
+        '--ay': `${y}px`,
+        '--arot': `${rotate}deg`,
+        '--askew': `${skew}deg`,
+        '--sy': '0px',
+        '--srot': '0deg',
+        '--sop': 1,
+        transform:
+          'translateY(calc(var(--ay) + var(--sy))) rotate(calc(var(--arot) + var(--srot))) skewX(var(--askew))',
+        opacity: 'var(--sop)',
+        transformOrigin: 'center bottom',
+      }}
+    >
+      <span
+        className={`inline-block will-change-transform ${cyc ? 'glyph-cycling' : ''}`}
+        data-key={cyc ? `${wordKey}-${idx}` : undefined}
+      >
+        {ch === ' ' ? ' ' : ch}
+      </span>
+    </span>
+  )
+}
+
+function PopSwapHeadline({ mobile, onFirstWordDone, onSwap }) {
   const [wordIdx, setWordIdx] = useState(0)
   const rootRef = useRef(null)
   const reduced = prefersReducedMotion()
   const firstDoneRef = useRef(false)
 
-  // cycle timer
   useEffect(() => {
     if (reduced) {
       if (!firstDoneRef.current) {
@@ -48,9 +77,7 @@ function PopSwapArcWord({ mobile, onFirstWordDone, onSwap }) {
     }
     const id = setInterval(() => {
       onSwap?.()
-      // roll the current letters out, then swap the word; the new word's
-      // entrance runs in the layout effect below
-      const glyphs = rootRef.current?.querySelectorAll('.glyph') || []
+      const glyphs = rootRef.current?.querySelectorAll('.glyph-cycling') || []
       gsap.to(glyphs, {
         yPercent: -55,
         opacity: 0,
@@ -58,17 +85,16 @@ function PopSwapArcWord({ mobile, onFirstWordDone, onSwap }) {
         duration: 0.2,
         ease: 'power2.in',
         stagger: 0.014,
-        onComplete: () => setWordIdx((i) => (i + 1) % WORDS.length),
+        onComplete: () => setWordIdx((i) => (i + 1) % CYCLE_WORDS.length),
       })
     }, WORD_MS)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced])
 
-  // entrance pop for each new word
   useEffect(() => {
     if (reduced) return
-    const glyphs = rootRef.current?.querySelectorAll('.glyph') || []
+    const glyphs = rootRef.current?.querySelectorAll('.glyph-cycling') || []
     gsap.fromTo(
       glyphs,
       { scale: 1.55, opacity: 0, yPercent: 8 },
@@ -90,40 +116,28 @@ function PopSwapArcWord({ mobile, onFirstWordDone, onSwap }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wordIdx, reduced])
 
-  const word = WORDS[wordIdx]
-  const n = word.length
+  const line = `${CYCLE_WORDS[wordIdx]} ${CONSTANT_WORD}`
+  const n = line.length
+  const cycLen = CYCLE_WORDS[wordIdx].length
 
   return (
     <span ref={rootRef} className="relative block">
       <span className="flex justify-center leading-none">
-        {word.split('').map((ch, i) => {
-          const t = n > 1 ? i / (n - 1) - 0.5 : 0
-          const { y, rotate, skew } = arcTransform(t, mobile)
-          return (
-            <span
-              key={`${wordIdx}-${i}`}
-              className="arc-glyph inline-block will-change-transform"
-              style={{
-                '--ay': `${y}px`,
-                '--arot': `${rotate}deg`,
-                '--askew': `${skew}deg`,
-                '--sy': '0px',
-                '--srot': '0deg',
-                '--sop': 1,
-                transform:
-                  'translateY(calc(var(--ay) + var(--sy))) rotate(calc(var(--arot) + var(--srot))) skewX(var(--askew))',
-                opacity: 'var(--sop)',
-                transformOrigin: 'center bottom',
-              }}
-            >
-              <span className="glyph inline-block will-change-transform">{ch}</span>
-            </span>
-          )
-        })}
+        {line.split('').map((ch, i) => (
+          <ArcGlyph
+            key={i < cycLen ? `c-${wordIdx}-${i}` : `k-${i - cycLen}`}
+            ch={ch}
+            t={n > 1 ? i / (n - 1) - 0.5 : 0}
+            mobile={mobile}
+            cyc={i < cycLen}
+            wordKey={wordIdx}
+            idx={i}
+          />
+        ))}
       </span>
-      {/* reserve the tallest word's box so the swap never reflows the page */}
+      {/* reserve the widest line's box so swaps never reflow the page */}
       <span aria-hidden="true" className="invisible block leading-none">
-        {WORDS.reduce((a, b) => (a.length > b.length ? a : b))}
+        {CYCLE_WORDS.reduce((a, b) => (a.length > b.length ? a : b))} {CONSTANT_WORD}
       </span>
     </span>
   )
@@ -167,37 +181,41 @@ function TypedKicker({ text, start, className = '' }) {
 }
 
 // ---------------------------------------------------------------------------
-// Screen track — infinite horizontal card rail, input-driven (measured: the
-// reference gallery is still at idle; drag and horizontal wheel move it and
-// it coasts to a stop)
+// Screen track — infinite horizontal card rail, input-driven, cursor-bowed
 // ---------------------------------------------------------------------------
 
-const PITCH_DESKTOP = 310
-const PITCH_MOBILE = 190
+const PITCH_DESKTOP = 255
+const PITCH_MOBILE = 165
 
-const ScreenTrack = forwardRef(function ScreenTrack({ mobile, offsetRef, velocityRef }, layerRef) {
+const ScreenTrack = forwardRef(function ScreenTrack(
+  { mobile, offsetRef, velocityRef, bowRef },
+  layerRef
+) {
   const cardRefs = useRef([])
   const reduced = prefersReducedMotion()
   const pitch = mobile ? PITCH_MOBILE : PITCH_DESKTOP
   const loop = heroCards.length * pitch
 
-  const applyFrame = (offset) => {
+  const applyFrame = (offset, bow) => {
     const half = loop / 2
+    const halfW = mobile ? 195 : 800
     for (let i = 0; i < heroCards.length; i++) {
       const el = cardRefs.current[i]
       if (!el) continue
-      // wrap each card's track position into [-loop/2, +loop/2] around center
       let dx = (i * pitch + offset) % loop
       if (dx > half) dx -= loop
       if (dx < -half) dx += loop
       const ax = Math.abs(dx)
-      // measured falloff: uniform size through the middle band, the leaving
-      // pair grows slightly and defocuses; gone shortly past the viewport edge
-      const grow = Math.max(0, (ax - (mobile ? 260 : 520)) / (mobile ? 220 : 420))
+      const grow = Math.max(0, (ax - (mobile ? 230 : 460)) / (mobile ? 200 : 400))
       const scale = 1 + Math.min(0.22, grow * 0.22)
-      const blur = Math.min(9, Math.max(0, (ax - (mobile ? 210 : 400)) / (mobile ? 190 : 380)) * 9)
-      const fade = Math.max(0, (ax - (mobile ? 420 : 900)) / (mobile ? 160 : 260))
-      el.style.transform = `translate(-50%, -50%) translateX(${dx}px) scale(${scale})`
+      const blur = Math.min(9, Math.max(0, (ax - (mobile ? 190 : 360)) / (mobile ? 180 : 360)) * 9)
+      const fade = Math.max(0, (ax - (mobile ? 400 : 880)) / (mobile ? 150 : 250))
+      // cursor bow: the rail bends like a curve whose bow follows cursor Y;
+      // cards ride the parabola and tilt along its tangent
+      const u = dx / halfW
+      const bowY = bow * u * u * 46
+      const bowRot = bow * u * 5
+      el.style.transform = `translate(-50%, -50%) translate(${dx}px, ${bowY}px) rotate(${bowRot}deg) scale(${scale})`
       el.style.filter = blur > 0.4 ? `blur(${blur}px)` : 'none'
       el.style.opacity = String(Math.max(0, 1 - fade))
       el.style.zIndex = String(100 + Math.round(grow * 50))
@@ -205,15 +223,15 @@ const ScreenTrack = forwardRef(function ScreenTrack({ mobile, offsetRef, velocit
   }
 
   useEffect(() => {
-    applyFrame(offsetRef.current)
+    applyFrame(offsetRef.current, 0)
     if (reduced) return
     const tick = (time, dtMs) => {
       const dt = Math.min(0.1, dtMs / 1000)
-      // coast: velocity decays toward zero; the track is otherwise still
-      velocityRef.current *= Math.pow(0.06, dt) > 0.94 ? 0.94 : Math.pow(0.94, dt * 60)
-      if (Math.abs(velocityRef.current) < 0.02) velocityRef.current = 0
-      offsetRef.current += velocityRef.current * dt
-      applyFrame(offsetRef.current)
+      // proper exponential decay with a hard zero so the rail is truly still
+      velocityRef.current *= Math.exp(-4.2 * dt)
+      if (Math.abs(velocityRef.current) < 0.5) velocityRef.current = 0
+      if (velocityRef.current !== 0) offsetRef.current += velocityRef.current * dt
+      applyFrame(offsetRef.current, bowRef.current)
     }
     gsap.ticker.add(tick)
     return () => gsap.ticker.remove(tick)
@@ -224,16 +242,16 @@ const ScreenTrack = forwardRef(function ScreenTrack({ mobile, offsetRef, velocit
     <div
       ref={layerRef}
       className="absolute inset-x-0 z-0"
-      style={{ top: mobile ? '24%' : '19.5%', height: mobile ? '38svh' : '45.5svh' }}
+      style={{ top: mobile ? '25%' : '21%', height: mobile ? '36svh' : '41svh' }}
     >
       <div className="relative h-full w-full">
         {heroCards.map((card, i) => (
           <div
             key={i}
             ref={(el) => (cardRefs.current[i] = el)}
-            className="absolute left-1/2 top-1/2 h-[300px] w-[152px] overflow-hidden rounded-[22px] border border-ink/10 bg-white shadow-[0_26px_60px_-34px_rgba(17,17,17,0.35)] will-change-transform md:h-[435px] md:w-[218px] md:rounded-[30px]"
+            className="absolute left-1/2 top-1/2 h-[275px] w-[150px] overflow-hidden rounded-[20px] border border-ink/10 bg-white shadow-[0_26px_60px_-34px_rgba(17,17,17,0.35)] will-change-transform md:h-[400px] md:w-[220px] md:rounded-[28px]"
           >
-            <img src={card.src} alt={card.alt} className="h-full w-full grayscale object-cover" draggable={false} />
+            <img src={card.src} alt={card.alt} className="h-full w-full object-cover" draggable={false} />
           </div>
         ))}
       </div>
@@ -248,6 +266,7 @@ const ScreenTrack = forwardRef(function ScreenTrack({ mobile, offsetRef, velocit
 export function Hero() {
   const section = useRef(null)
   const headlineWrap = useRef(null)
+  const headlineZoom = useRef(null)
   const trackLayer = useRef(null)
   const trackDrift = useRef(null)
   const avatarScrub = useRef(null)
@@ -258,9 +277,10 @@ export function Hero() {
   const isTouch = useIsTouch()
   const [mobile, setMobile] = useState(false)
   const [firstWordDone, setFirstWordDone] = useState(false)
-  // track offset (px along the rail) + coasting velocity (px/s)
+  const [introDone, setIntroDone] = useState(false)
   const trackOffset = useRef(0)
   const trackVelocity = useRef(0)
+  const trackBow = useRef(0)
 
   useEffect(() => {
     const measure = () => setMobile(window.innerWidth < 768)
@@ -269,10 +289,24 @@ export function Hero() {
     return () => window.removeEventListener('resize', measure)
   }, [])
 
-  // Load-in: avatar rises after the first word pops in; kickers follow.
+  // Wait for the intro loader before running the load-in (3s fallback).
   useEffect(() => {
-    if (prefersReducedMotion()) return
-    const tl = gsap.timeline({ delay: 0.4 })
+    let fallback = setTimeout(() => setIntroDone(true), 3000)
+    const onDone = () => {
+      clearTimeout(fallback)
+      setIntroDone(true)
+    }
+    window.addEventListener('intro:done', onDone)
+    return () => {
+      clearTimeout(fallback)
+      window.removeEventListener('intro:done', onDone)
+    }
+  }, [])
+
+  // Load-in after the intro lifts.
+  useEffect(() => {
+    if (!introDone || prefersReducedMotion()) return
+    const tl = gsap.timeline({ delay: 0.1 })
     if (avatarScrub.current) {
       gsap.set(avatarScrub.current, { opacity: 0, y: 26 })
       tl.to(avatarScrub.current, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 0)
@@ -283,9 +317,9 @@ export function Hero() {
       tl.to(el, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.25 + i * 0.08)
     })
     return () => tl.kill()
-  }, [])
+  }, [introDone])
 
-  // Idle float on the avatar image (independent of the scroll-scrub wrapper).
+  // Idle float on the avatar image.
   useEffect(() => {
     if (prefersReducedMotion() || !avatarFloat.current) return
     const tl = gsap
@@ -294,18 +328,19 @@ export function Hero() {
     return () => tl.kill()
   }, [])
 
-  // Surge flash: on every word swap the character goes solid ink for a beat
-  // (the reference flashes solid red at the same moment).
+  // Surge flash: solid brand-blue silhouette at each word swap (ref flashes
+  // red; blue is this site's accent). Filter chain approximates #2E54FE.
   const surge = () => {
     if (prefersReducedMotion() || !avatarImg.current) return
     const el = avatarImg.current
+    const blue =
+      'brightness(0) saturate(100%) invert(28%) sepia(96%) saturate(4000%) hue-rotate(230deg) brightness(100%)'
     gsap.timeline()
-      .to(el, { filter: 'brightness(0)', duration: 0.1, ease: 'power1.in' })
-      .to(el, { filter: 'brightness(1)', duration: 0.3, ease: 'power2.out' }, '+=0.12')
+      .set(el, { filter: blue })
+      .to(el, { filter: 'none', duration: 0.32, ease: 'power2.out', delay: 0.2 })
   }
 
-  // Input: pointer drag anywhere on the hero, or horizontal wheel/trackpad
-  // deltas, move the track; release lets it coast (matches the recording).
+  // Input: drag + horizontal wheel steer the rail; vertical wheel scrolls.
   useEffect(() => {
     const sec = section.current
     if (!sec) return
@@ -336,8 +371,6 @@ export function Hero() {
       trackVelocity.current = Math.max(-2600, Math.min(2600, trackVelocity.current))
     }
     const wheel = (e) => {
-      // horizontal intent only: trackpad side-swipes and shift+wheel steer the
-      // rail; vertical wheel keeps scrolling the page
       const dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0
       if (!dx) return
       e.preventDefault()
@@ -357,26 +390,31 @@ export function Hero() {
     }
   }, [])
 
-  // Cursor parallax on the track layer.
+  // Cursor parallax (x/y drift) + cursor-Y bow on the rail.
   useEffect(() => {
     const sec = section.current
     const el = trackDrift.current
     if (!sec || !el || isTouch || prefersReducedMotion()) return
     const xTo = gsap.quickTo(el, 'x', { duration: 1.1, ease: 'power3' })
     const yTo = gsap.quickTo(el, 'y', { duration: 1.1, ease: 'power3' })
+    const bowTo = gsap.quickTo(trackBow, 'current', { duration: 0.9, ease: 'power2' })
     let raf = 0
     const onMove = (e) => {
       if (raf) return
       raf = requestAnimationFrame(() => {
         const r = sec.getBoundingClientRect()
+        const ny = (e.clientY - r.top) / r.height - 0.5
         xTo(((e.clientX - r.left) / r.width - 0.5) * -14)
-        yTo(((e.clientY - r.top) / r.height - 0.5) * -14)
+        yTo(ny * -14)
+        // cursor high -> bow one way, low -> the other
+        bowTo(ny * -2)
         raf = 0
       })
     }
     const onLeave = () => {
       xTo(0)
       yTo(0)
+      bowTo(0)
     }
     sec.addEventListener('mousemove', onMove, { passive: true })
     sec.addEventListener('mouseleave', onLeave)
@@ -385,11 +423,11 @@ export function Hero() {
       sec.removeEventListener('mouseleave', onLeave)
       if (raf) cancelAnimationFrame(raf)
       gsap.killTweensOf(el)
+      gsap.killTweensOf(trackBow)
     }
   }, [isTouch])
 
-  // Scroll pull: headline lifts out per-letter, track fades/blurs, avatar
-  // settles away, kickers slide off — scrubbed over the hero's pin span.
+  // Zoom exit: the hero scales up and defocuses as the sheet arrives.
   useEffect(() => {
     const sec = section.current
     if (!sec || prefersReducedMotion()) return
@@ -400,31 +438,23 @@ export function Hero() {
       scrub: 0.5,
       onUpdate(self) {
         const p = self.progress
-        const glyphs = headlineWrap.current ? headlineWrap.current.querySelectorAll('.arc-glyph') : []
-        const n = glyphs.length
-        glyphs.forEach((el, i) => {
-          const stagger = n > 1 ? i / (n - 1) : 0
-          const local = gsap.utils.clamp(0, 1, (p - stagger * 0.25) / 0.75)
-          el.style.setProperty('--sy', `${-local * 90}px`)
-          el.style.setProperty('--srot', `${-local * 10}deg`)
-          el.style.setProperty('--sop', String(1 - local))
-        })
+        if (headlineZoom.current) {
+          headlineZoom.current.style.transform = `scale(${1 + p * 1.4})`
+          headlineZoom.current.style.opacity = String(Math.max(0, 1 - p / 0.7))
+          headlineZoom.current.style.filter = p > 0.02 ? `blur(${p * 14}px)` : 'none'
+        }
         if (trackLayer.current) {
-          trackLayer.current.style.opacity = String(1 - p)
-          trackLayer.current.style.filter = p > 0.01 ? `blur(${p * 8}px)` : 'none'
+          trackLayer.current.style.transform = `scale(${1 + p * 0.9})`
+          trackLayer.current.style.opacity = String(Math.max(0, 1 - p / 0.85))
+          trackLayer.current.style.filter = p > 0.02 ? `blur(${p * 10}px)` : 'none'
         }
         if (avatarScrub.current) {
-          avatarScrub.current.style.transform = `translateY(${p * 46}px) scale(${1 - p * 0.08})`
-          avatarScrub.current.style.opacity = String(1 - p)
+          avatarScrub.current.style.transform = `scale(${1 + p * 0.15})`
+          avatarScrub.current.style.opacity = String(Math.max(0, 1 - p / 0.5))
         }
-        if (kickerLeft.current) {
-          kickerLeft.current.style.transform = `translateX(${-p * 140}px) rotate(-3.5deg)`
-          kickerLeft.current.style.opacity = String(1 - p)
-        }
-        if (kickerRight.current) {
-          kickerRight.current.style.transform = `translateX(${p * 140}px) rotate(3.5deg)`
-          kickerRight.current.style.opacity = String(1 - p)
-        }
+        const kf = Math.max(0, 1 - p / 0.35)
+        if (kickerLeft.current) kickerLeft.current.style.opacity = String(kf)
+        if (kickerRight.current) kickerRight.current.style.opacity = String(kf)
       },
     })
     return () => trigger.kill()
@@ -435,7 +465,6 @@ export function Hero() {
       ref={section}
       className="relative flex min-h-[100svh] w-full flex-col items-center overflow-hidden bg-white"
     >
-      {/* Real heading for search + screen readers. */}
       <h1 className="sr-only">Abishai Gosula</h1>
 
       {/* 2. screen track — input-driven horizontal rail, deepest layer */}
@@ -445,23 +474,30 @@ export function Hero() {
           mobile={mobile}
           offsetRef={trackOffset}
           velocityRef={trackVelocity}
+          bowRef={trackBow}
         />
       </div>
 
-      {/* 1. bowed pop-swap headline — above the track, behind the avatar */}
+      {/* 1. bowed two-word pop-swap headline — above the track, behind the avatar */}
       <div
         ref={headlineWrap}
         aria-hidden="true"
-        className="pointer-events-none relative z-10 mx-auto mt-24 w-full max-w-[1500px] px-4 text-center md:mt-[64px]"
+        className="pointer-events-none relative z-10 mx-auto mt-24 w-full max-w-[1560px] px-4 text-center md:mt-[76px]"
       >
-        <div
-          className="mx-auto font-anton uppercase text-[#111]"
-          style={{
-            fontSize: mobile ? 'clamp(2.5rem, 15.5vw, 4.25rem)' : 'clamp(5.5rem, 9.8vw, 10rem)',
-            letterSpacing: '-0.01em',
-          }}
-        >
-          <PopSwapArcWord mobile={mobile} onFirstWordDone={() => setFirstWordDone(true)} onSwap={surge} />
+        <div ref={headlineZoom} style={{ transformOrigin: 'center 30%' }}>
+          <div
+            className="mx-auto font-anton uppercase text-[#111]"
+            style={{
+              fontSize: mobile ? 'clamp(2.2rem, 12.5vw, 3.6rem)' : 'clamp(5.5rem, 10.6vw, 10.75rem)',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            <PopSwapHeadline
+              mobile={mobile}
+              onFirstWordDone={() => setFirstWordDone(true)}
+              onSwap={surge}
+            />
+          </div>
         </div>
       </div>
 
@@ -469,6 +505,7 @@ export function Hero() {
       <div
         ref={avatarScrub}
         className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center pb-36 md:pb-[10svh]"
+        style={{ transformOrigin: 'center 75%' }}
       >
         <div ref={avatarFloat} className="relative flex h-[42svh] items-end md:h-[74svh]">
           <div
@@ -486,20 +523,20 @@ export function Hero() {
         </div>
       </div>
 
-      {/* 4. angled kickers (typed on load), in the gap under the cards */}
+      {/* 4. angled kickers (typed on load), measured spots from the recording */}
       <p
         ref={kickerLeft}
-        className="pointer-events-none absolute left-[6%] top-[34%] z-20 max-w-[8rem] rotate-[-3.5deg] text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:left-[17.5%] md:top-[67.5%] md:max-w-none md:text-[19px]"
+        className="pointer-events-none absolute left-[6%] top-[34%] z-20 max-w-[8rem] rotate-[-3.5deg] text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:left-[19%] md:top-[71%] md:max-w-none md:text-[20px]"
         style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
       >
-        <TypedKicker text="Founder & CS Student" start={firstWordDone} />
+        <TypedKicker text="Founder & CS Student" start={firstWordDone && introDone} />
       </p>
       <p
         ref={kickerRight}
-        className="pointer-events-none absolute right-[6%] top-[38%] z-20 max-w-[8rem] rotate-[3.5deg] text-right text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:right-[21.5%] md:top-[66%] md:max-w-none md:text-[19px]"
+        className="pointer-events-none absolute right-[6%] top-[38%] z-20 max-w-[8rem] rotate-[3.5deg] text-right text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:right-[26%] md:top-[71%] md:max-w-none md:text-[20px]"
         style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
       >
-        <TypedKicker text="Ships End to End" start={firstWordDone} />
+        <TypedKicker text="Ships End to End" start={firstWordDone && introDone} />
       </p>
     </section>
   )

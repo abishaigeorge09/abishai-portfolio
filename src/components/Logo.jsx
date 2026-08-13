@@ -29,13 +29,12 @@ export function Logo({ className = '' }) {
   return (
     <Link
       to="/"
-      className={`flex items-center gap-2.5 transition-transform duration-300 hover:scale-105 ${className}`}
+      className={`flex items-center gap-1.5 font-display text-lg font-bold transition-transform duration-300 hover:scale-105 ${className}`}
       aria-label={`${site.firstName} ${site.lastName} home`}
     >
-      <AgMark className="h-[30px] w-[42px] shrink-0" />
-      <span className="font-display text-lg font-bold">
-        {site.firstName} {site.lastName}
-      </span>
+      <span>{site.firstName}</span>
+      <span className="h-2 w-2 rounded-full bg-blue" aria-hidden="true" />
+      <span>{site.lastName}</span>
     </Link>
   )
 }

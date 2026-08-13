@@ -5,6 +5,7 @@ import { Nav } from './components/Nav'
 import { Footer } from './components/Footer'
 import { Cursor } from './components/Cursor'
 import { KineticScroll } from './components/KineticScroll'
+import { IntroLoader } from './components/IntroLoader'
 import { useLenis } from './lib/useLenis'
 import { ScrollTrigger } from './lib/gsap'
 import Home from './pages/Home'
@@ -40,6 +41,7 @@ export default function App() {
 
   return (
     <>
+      <IntroLoader />
       <Cursor />
       <KineticScroll />
       <Nav />
