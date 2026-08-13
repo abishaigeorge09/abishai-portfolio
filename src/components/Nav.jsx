@@ -107,6 +107,8 @@ export function Nav() {
               <a
                 href={site.resumeUrl}
                 download
+                target="_blank"
+                rel="noopener"
                 className="flex items-center gap-1.5 font-display text-sm font-semibold transition-transform hover:-translate-y-0.5"
               >
                 Résumé

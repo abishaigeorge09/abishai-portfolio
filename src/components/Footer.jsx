@@ -6,6 +6,7 @@
 // phones get a 960px encode (~250KB vs 4MB), and playback pauses off-screen.
 import { useEffect, useRef, useState } from 'react'
 import { socials } from '../data/socials'
+import { site } from '../config/site'
 
 const FOOTER_VIDEO = '/assets/video/avatar-bench.mp4'
 const FOOTER_VIDEO_MOBILE = '/assets/video/avatar-bench-mobile.mp4'
@@ -90,6 +91,19 @@ export function Footer() {
               </a>
             </li>
           ))}
+          {site.resumeUrl && (
+            <li>
+              <a
+                href={site.resumeUrl}
+                download
+                target="_blank"
+                rel="noopener"
+                className="text-ink/85 transition-colors hover:text-blue"
+              >
+                Résumé
+              </a>
+            </li>
+          )}
         </ul>
       </div>
 

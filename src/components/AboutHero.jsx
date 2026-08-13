@@ -86,6 +86,8 @@ export function AboutHero() {
                 ref={magnet}
                 href={site.resumeUrl}
                 download
+                target="_blank"
+                rel="noopener"
                 className="ab-cta group mt-7 inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3 font-display text-sm font-semibold text-cream transition-transform duration-300 ease-spring-pill hover:scale-105"
               >
                 Download résumé

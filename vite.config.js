@@ -26,6 +26,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // never serve the SPA shell for real files (PDF resume, media): on
+        // phones these are navigations and the fallback broke the download
+        navigateFallbackDenylist: [/\.(pdf|mp4|jpg|png|webp|webmanifest|xml|txt)$/i, /^\/assets\//],
         globPatterns: ['**/*.{js,css,html,svg,webp,woff2}'],
         globIgnores: ['**/assets/video/**', '**/assets/img/**'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
