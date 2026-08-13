@@ -9,8 +9,11 @@ import { socials } from '../data/socials'
 import { site } from '../config/site'
 
 const FOOTER_VIDEO = '/assets/video/avatar-bench.mp4'
+// phones get a native PORTRAIT crop of the 2K master (full-height sharpness),
+// not a shrunken landscape encode
 const FOOTER_VIDEO_MOBILE = '/assets/video/avatar-bench-mobile.mp4'
 const FOOTER_POSTER = '/assets/img/avatar-bench-poster.jpg'
+const FOOTER_POSTER_MOBILE = '/assets/img/avatar-bench-poster-mobile.jpg'
 
 function SceneVideo() {
   const [failed, setFailed] = useState(false)
@@ -20,6 +23,8 @@ function SceneVideo() {
   useEffect(() => {
     const vid = videoRef.current
     if (!vid) return
+    // pick the poster matching the crop the device will play
+    vid.poster = window.innerWidth < 768 ? FOOTER_POSTER_MOBILE : FOOTER_POSTER
     // The footer is a FIXED layer behind the content sheet, so it always
     // intersects the viewport; the reveal actually depends on scroll position.
     // Attach the source and play only when the page is near its end.
@@ -59,7 +64,7 @@ function SceneVideo() {
           muted
           playsInline
           preload="none"
-          className="absolute inset-0 h-full w-full object-cover object-[22%_center] md:object-center"
+          className="absolute inset-0 h-full w-full object-cover object-center"
           onError={() => setFailed(true)}
         />
       )}
