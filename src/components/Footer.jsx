@@ -58,7 +58,7 @@ function SceneVideo() {
           muted
           playsInline
           preload="none"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-[22%_center] md:object-center"
           onError={() => setFailed(true)}
         />
       )}

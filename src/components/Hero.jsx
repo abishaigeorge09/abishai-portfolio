@@ -547,7 +547,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-36 md:pb-[10svh]"
         style={{ transformOrigin: 'center 75%' }}
       >
-        <div ref={avatarFloat} className="relative flex h-[42svh] items-end md:h-[74svh]">
+        <div ref={avatarFloat} className="relative flex h-[52svh] items-end md:h-[74svh]">
           <div
             aria-hidden="true"
             className="absolute bottom-1 left-1/2 h-6 w-[46%] -translate-x-1/2 rounded-full md:h-9"
@@ -569,14 +569,14 @@ export function Hero() {
       <div ref={driftKickers} className="pointer-events-none absolute inset-0 z-20">
         <p
           ref={kickerLeft}
-          className="absolute left-[6%] top-[34%] max-w-[8rem] rotate-[-3.5deg] text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:left-[19%] md:top-[73%] md:max-w-none md:text-[20px]"
+          className="absolute left-[19%] top-[73%] hidden rotate-[-3.5deg] text-[20px] font-extrabold uppercase tracking-[0.1em] text-ink md:block"
           style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
         >
           <TypedKicker text="Founder & CS Student" start={firstWordDone && introDone} />
         </p>
         <p
           ref={kickerRight}
-          className="absolute right-[6%] top-[38%] max-w-[8rem] rotate-[3.5deg] text-right text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:right-[26%] md:top-[73%] md:max-w-none md:text-[20px]"
+          className="absolute right-[26%] top-[73%] hidden rotate-[3.5deg] text-right text-[20px] font-extrabold uppercase tracking-[0.1em] text-ink md:block"
           style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
         >
           <TypedKicker text="Ships End to End" start={firstWordDone && introDone} />
