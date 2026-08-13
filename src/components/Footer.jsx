@@ -1,12 +1,13 @@
 // Footer = the full-screen closing scene (revealed as the page lifts; see App).
-// A full-bleed scene behind, a centered avatar placeholder, and role/studio labels
+// A full-bleed scene behind, a centered avatar video, and role/studio labels
 // in the bottom corners. Drop your video at the path below.
 import { useState } from 'react'
 import { GradientScene } from './GradientScene'
 import { socials } from '../data/socials'
 
-// TODO: drop your avatar/desk video here and it fills the scene automatically.
 const FOOTER_VIDEO = '/assets/video/desk-hero.mp4'
+const AVATAR_VIDEO = '/assets/video/avatar-tennis.mp4'
+const AVATAR_POSTER = '/assets/img/avatar-tennis-poster.jpg'
 
 function SceneVideo() {
   const [failed, setFailed] = useState(false)
@@ -64,14 +65,18 @@ export function Footer() {
         </ul>
       </div>
 
-      {/* centered avatar placeholder - TODO: drop your avatar video/image here */}
+      {/* centered avatar video card */}
       <div className="absolute inset-0 z-10 grid place-items-center px-5">
-        <div className="grid aspect-[3/4] w-56 max-w-[60vw] place-items-center rounded-3xl border border-dashed border-cream/30 bg-cream/5 backdrop-blur-sm md:w-72">
-          <span className="px-4 text-center font-display text-xs font-semibold uppercase tracking-widest text-cream/55">
-            Avatar
-            <br />
-            drop your video / image
-          </span>
+        <div className="aspect-[3/4] w-56 max-w-[60vw] overflow-hidden rounded-2xl md:w-72">
+          <video
+            src={AVATAR_VIDEO}
+            poster={AVATAR_POSTER}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="h-full w-full object-cover"
+          />
         </div>
       </div>
 

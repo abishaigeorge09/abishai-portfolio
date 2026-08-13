@@ -42,7 +42,7 @@ export function AboutHero() {
   }, [])
 
   return (
-    <section ref={root} className="relative flex min-h-[100svh] flex-col overflow-hidden">
+    <section ref={root} className="relative flex min-h-screen flex-col overflow-hidden">
       {/* soft accents */}
       <div className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-peach/25 blur-3xl" aria-hidden="true" />
       <div className="pointer-events-none absolute -left-24 bottom-24 h-72 w-72 rounded-full bg-[var(--peach-tint)]/40 blur-3xl" aria-hidden="true" />
@@ -81,17 +81,19 @@ export function AboutHero() {
               ))}
             </dl>
 
-            <a
-              ref={magnet}
-              href={site.resumeUrl}
-              download
-              className="ab-cta group mt-7 inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3 font-display text-sm font-semibold text-cream transition-transform duration-300 ease-spring-pill hover:scale-105"
-            >
-              Download résumé
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-y-0.5">
-                <path d="M8 2v8M8 10L4.5 6.5M8 10l3.5-3.5M3 14h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
+            {site.resumeUrl && (
+              <a
+                ref={magnet}
+                href={site.resumeUrl}
+                download
+                className="ab-cta group mt-7 inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3 font-display text-sm font-semibold text-cream transition-transform duration-300 ease-spring-pill hover:scale-105"
+              >
+                Download résumé
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-y-0.5">
+                  <path d="M8 2v8M8 10L4.5 6.5M8 10l3.5-3.5M3 14h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            )}
           </div>
 
           {/* portrait card */}
@@ -99,7 +101,7 @@ export function AboutHero() {
             <div className="ab-portrait relative mx-auto aspect-[3/4] w-full max-w-[300px] rotate-2 md:max-w-[420px]">
               <div className="absolute inset-0 overflow-hidden rounded-[2rem] shadow-[0_40px_90px_-30px_rgba(51,51,51,0.4)]">
                 {failed ? (
-                  <GradientScene tone="warm" rounded="rounded-[2rem]" className="h-full w-full" label="PORTRAIT · drop portrait.jpg" />
+                  <GradientScene tone="warm" rounded="rounded-[2rem]" className="h-full w-full" label="PORTRAIT" />
                 ) : (
                   <img
                     src="/assets/img/portrait.jpg"

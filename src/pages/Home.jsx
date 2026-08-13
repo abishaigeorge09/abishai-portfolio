@@ -96,7 +96,7 @@ export default function Home() {
           <ParallaxImage
             src="/assets/img/desk-photo.jpg"
             alt="Abishai at his desk"
-            label="DESK PHOTO · drop desk-photo.jpg"
+            label="DESK PHOTO"
             className="h-[42vh] min-h-[300px] md:h-[70vh] md:min-h-[460px]"
           />
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center">

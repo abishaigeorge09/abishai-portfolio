@@ -103,16 +103,18 @@ export function Nav() {
 
           {/* résumé + socials - hidden on phone */}
           <div className={`hidden items-center gap-4 transition-colors duration-300 md:flex md:gap-5 ${topText}`}>
-            <a
-              href={site.resumeUrl}
-              download
-              className="flex items-center gap-1.5 font-display text-sm font-semibold transition-transform hover:-translate-y-0.5"
-            >
-              Résumé
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2v8M8 10L4.5 6.5M8 10l3.5-3.5M3 14h10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
+            {site.resumeUrl && (
+              <a
+                href={site.resumeUrl}
+                download
+                className="flex items-center gap-1.5 font-display text-sm font-semibold transition-transform hover:-translate-y-0.5"
+              >
+                Résumé
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2v8M8 10L4.5 6.5M8 10l3.5-3.5M3 14h10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            )}
 
             <div className="flex items-center gap-3.5">
               {socials.map((s) => (

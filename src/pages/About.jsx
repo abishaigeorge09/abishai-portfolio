@@ -125,28 +125,30 @@ export default function About() {
         </ul>
       </SectionCard>
 
-      <SectionCard index={7} title="Writing">
-        <div className="grid gap-4">
-          {writing.map((post, i) => (
-            <a
-              key={i}
-              href={post.href}
-              target="_blank"
-              rel="noreferrer"
-              data-cursor="view"
-              className={`group flex items-center justify-between gap-4 rounded-2xl border p-5 transition-transform duration-300 ease-spring-pill hover:scale-[1.02] ${
-                post.placeholder ? 'border-dashed border-ink/20' : 'border-ink/10'
-              }`}
-            >
-              <div>
-                <span className="block text-xs uppercase tracking-widest text-gray-warm">{post.date}</span>
-                <span className="font-display font-semibold text-ink">{post.title}</span>
-              </div>
-              <span className="font-display text-sm text-blue">Read →</span>
-            </a>
-          ))}
-        </div>
-      </SectionCard>
+      {writing.length > 0 && (
+        <SectionCard index={7} title="Writing">
+          <div className="grid gap-4">
+            {writing.map((post, i) => (
+              <a
+                key={i}
+                href={post.href}
+                target="_blank"
+                rel="noreferrer"
+                data-cursor="view"
+                className={`group flex items-center justify-between gap-4 rounded-2xl border p-5 transition-transform duration-300 ease-spring-pill hover:scale-[1.02] ${
+                  post.placeholder ? 'border-dashed border-ink/20' : 'border-ink/10'
+                }`}
+              >
+                <div>
+                  <span className="block text-xs uppercase tracking-widest text-gray-warm">{post.date}</span>
+                  <span className="font-display font-semibold text-ink">{post.title}</span>
+                </div>
+                <span className="font-display text-sm text-blue">Read →</span>
+              </a>
+            ))}
+          </div>
+        </SectionCard>
+      )}
 
       {/* Off the clock - hobbies gallery */}
       <Hobbies />

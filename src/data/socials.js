@@ -7,8 +7,7 @@ export const EMAIL = site.email
 export const socials = [
   { key: 'email', name: 'Email', href: `mailto:${EMAIL}`, cursor: 'email' },
   { key: 'linkedin', name: 'LinkedIn', href: 'https://www.linkedin.com/in/abishai-george-e-gosula/' },
-  // TODO: replace placeholder handles with real ones.
-  { key: 'instagram', name: 'Instagram', href: 'https://instagram.com/' },
-  { key: 'youtube', name: 'YouTube', href: 'https://youtube.com/' },
-  { key: 'x', name: 'X', href: 'https://x.com/' },
+  { key: 'instagram', name: 'Instagram', href: 'https://instagram.com/abishaigosula' },
+  { key: 'youtube', name: 'YouTube', href: 'https://www.youtube.com/@abishaigeorge' },
+  { key: 'x', name: 'X', href: 'https://x.com/Agosula' },
 ]

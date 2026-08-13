@@ -18,8 +18,8 @@ export const projects = [
     ],
     challenge:
       'Unify fragmented coaching tools into one dashboard with a Claude-powered synthesis layer. Won SportsTech 183; Most Innovative Technology, Collider Cup XVIII; accepted to Berkeley SkyDeck Pad-13 (Batch 22).',
-    media: null, // TODO: drop /assets/img/synth.jpg or /assets/video/synth.mp4
-    link: null, // TODO: live link
+    media: '/assets/img/projects/synth.jpg',
+    link: null,
   },
   {
     slug: 'gmv-live',
@@ -34,9 +34,9 @@ export const projects = [
       { value: 'Pad-13', label: 'SkyDeck Batch 23' },
     ],
     challenge:
-      'Marketplace connecting TikTok Shop brands with live shopping hosts; booking, escrow, real-time analytics. 2nd Place plus People’s Choice, Collider Cup XVIII; Berkeley SkyDeck Pad-13 (Batch 23).',
-    media: null, // TODO
-    link: null, // TODO: live link
+      'Marketplace connecting TikTok Shop brands with live shopping hosts; booking, escrow, real-time analytics. 2nd Place plus People\'s Choice, Collider Cup XVIII; Berkeley SkyDeck Pad-13 (Batch 23).',
+    media: '/assets/img/projects/gmv.jpg',
+    link: null,
   },
   {
     slug: 'benji',
@@ -52,8 +52,8 @@ export const projects = [
     ],
     challenge:
       'POV-first AI tennis coaching on Ray-Ban Meta smart glasses. On-device pose detection (40/40 frames on benchmark), TrackNet ball tracking, biomechanics grading, real-time audio feedback. Integrated Meta DAT SDK.',
-    media: null, // TODO
-    link: null, // TODO: live link
+    media: '/assets/img/projects/benji.jpg',
+    link: null,
   },
   {
     slug: 'atlitos',
@@ -69,8 +69,8 @@ export const projects = [
     ],
     challenge:
       'AI-powered sports super-app: academy management, AI coaching, performance analytics in a gamified ecosystem. Incubated under Elsheph.',
-    media: null, // TODO
-    link: null, // TODO: live link
+    media: '/assets/img/projects/atlitos.jpg',
+    link: 'https://atlitos.com',
   },
   {
     slug: 'elsheph-systems',
@@ -86,8 +86,8 @@ export const projects = [
     ],
     challenge:
       'Parent company and product studio. Custom software plus training and employing young engineers from Andhra Pradesh.',
-    media: null, // TODO
-    link: null, // TODO: live link
+    media: '/assets/img/projects/elsheph.jpg',
+    link: 'https://jobsudarshan.com',
   },
   {
     slug: 'aiot-air-hockey',
@@ -103,22 +103,8 @@ export const projects = [
     ],
     challenge:
       'Sensor-driven goal detection, BLE scoreboard, analytics. Second Prize among 40+ teams, NUS SoC Summer Workshop.',
-    media: null, // TODO
-    link: null, // TODO: live link
-  },
-  {
-    slug: 'project-slot',
-    name: 'Next project',
-    year: '',
-    role: '',
-    tags: [],
-    blurb: 'Something new is in the works.',
-    accent: '#96908C',
-    metrics: [],
-    challenge: 'Placeholder for a future project.', // TODO: project slot
-    media: null,
+    media: '/assets/img/projects/aiot-air-hockey.jpg',
     link: null,
-    placeholder: true,
   },
 ]
 

@@ -7,8 +7,8 @@ export const site = {
   firstName: 'Abishai',
   lastName: 'Gosula',
   // The blue dot between first/last is the brand accent (--blue).
-  email: 'abishai@elsheph.com', // TODO: confirm - was unsure if "delshop"; using elsheph for consistency
-  resumeUrl: '/assets/Abishai-Gosula-Resume.pdf', // drop the PDF here
+  email: 'abishai@elsheph.com',
+  resumeUrl: null, // no resume PDF yet; nav hides the link while null
   role: 'Founder & Computer-Science student',
   location: 'Hyderabad · working globally',
 }

@@ -4,7 +4,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap, prefersReducedMotion } from '../lib/gsap'
 
-// TODO: drop real photos at these paths; designed tiles show until then.
 // Evenly spread across two rows so nothing overlaps or clusters to one side.
 const HOBBIES = [
   { src: '/assets/img/hobbies/tennis.jpg', label: 'Tennis', accent: '#1FB58F', pos: { left: '1%', top: '2%' }, rot: '-rotate-3' },

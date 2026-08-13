@@ -87,11 +87,11 @@ export function WhyMe() {
   }, [])
 
   return (
-    <section ref={section} className="relative h-[100svh] w-full overflow-hidden bg-[var(--scene-dark)] text-cream">
-      {/* ONE full-bleed photo of AG - TODO: drop /assets/img/whyme.jpg */}
+    <section ref={section} className="relative h-screen w-full overflow-hidden bg-[var(--scene-dark)] text-cream">
+      {/* ONE full-bleed photo of AG */}
       <div ref={photo} className="absolute inset-0 scale-[1.06]">
         {failed ? (
-          <GradientScene tone="warm" rounded="rounded-none" className="absolute inset-0 h-full w-full" label="YOUR PHOTO · drop whyme.jpg" />
+          <GradientScene tone="warm" rounded="rounded-none" className="absolute inset-0 h-full w-full" label="PORTRAIT" />
         ) : (
           <img src="/assets/img/whyme.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" onError={() => setFailed(true)} />
         )}
