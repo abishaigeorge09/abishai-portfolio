@@ -1,0 +1,20 @@
+Hero v5: motion matched to a frame-by-frame recording of the reference
+
+Recorded s0animation.com/design as video and extracted 80 frames. Corrections:
+- The gallery is a horizontal TRACK, static at idle (no auto-spin) - moves only
+  from pointer drag (fling inertia) or horizontal wheel/trackpad deltas, wraps
+  infinitely; uniform portrait cards on a 310px pitch, the leaving pair grows
+  and defocuses; vertical wheel still scrolls the page
+- Word cycle is a per-letter pop swap (not typing): old letters lift out, new
+  letters pop in with back-out overshoot
+- The character flashes to a solid silhouette on every word swap (ref flashes
+  red; mono site flashes ink)
+- Title bow, card band, kicker positions retuned to measured frame geometry
+
+Verified with scripted browser runs: idle stillness, drag+coast, wheel input,
+page scroll intact, surge flash captured in screenshots.
+
+Test build only, NOT deployed.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01JTfVRAGV4cEeEq8AJX6D7w
