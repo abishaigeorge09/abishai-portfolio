@@ -59,11 +59,27 @@ function sampleGlyphPoints(count) {
         resolve(pts)
         return
       }
+      // Normalize against the DARK-PIXEL bounding box, not the canvas: the
+      // skewed glyph's mass is not centered in the canvas, and normalizing
+      // against the canvas rendered the mark off-center on screen.
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
+      for (const [px, py] of dark) {
+        if (px < minX) minX = px
+        if (px > maxX) maxX = px
+        if (py < minY) minY = py
+        if (py > maxY) maxY = py
+      }
+      const cx = (minX + maxX) / 2
+      const cy = (minY + maxY) / 2
+      const halfSpanX = Math.max(1, (maxX - minX) / 2)
+      const halfSpanY = Math.max(1, (maxY - minY) / 2)
+      // both axes in units of the glyph's half-width, so true proportions
+      // survive when scaled by a single world half-width
+      void halfSpanY
       for (let i = 0; i < count; i++) {
         const [px, py] = dark[Math.floor(Math.random() * dark.length)]
-        // normalize to [-1, 1], flip y (canvas y-down -> world y-up)
-        const nx = (px / W - 0.5) * 2
-        const ny = -(py / H - 0.5) * 2
+        const nx = (px - cx) / halfSpanX
+        const ny = -(py - cy) / halfSpanX
         pts.push([nx, ny])
       }
       resolve(pts)
@@ -105,7 +121,6 @@ export function IntroLoader() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (sessionStorage.getItem(SESSION_KEY)) return
 
     const root = rootRef.current
     if (!root) return
@@ -113,13 +128,11 @@ export function IntroLoader() {
     const finish = () => {
       if (doneRef.current) return
       doneRef.current = true
-      sessionStorage.setItem(SESSION_KEY, '1')
       window.dispatchEvent(new CustomEvent('intro:done'))
     }
 
     // Reduced motion: quick fade, no particles.
     if (prefersReducedMotion()) {
-      sessionStorage.setItem(SESSION_KEY, '1')
       gsap.to(root, {
         opacity: 0,
         duration: 0.4,
@@ -188,7 +201,7 @@ export function IntroLoader() {
         // viewport top is +worldH/2, 38% down from top:
         const worldH = wpp * window.innerHeight
         const topY = worldH / 2
-        const centerY = topY - 0.38 * worldH
+        const centerY = topY - 0.5 * worldH
         return { glyphHalfWidth, glyphHalfHeight, centerY }
       }
 
@@ -240,7 +253,7 @@ export function IntroLoader() {
           }
           const [nx, ny] = pts[i % pts.length]
           targets[i * 3] = nx * layout.glyphHalfWidth
-          targets[i * 3 + 1] = layout.centerY + ny * layout.glyphHalfHeight
+          targets[i * 3 + 1] = layout.centerY + ny * layout.glyphHalfWidth
           targets[i * 3 + 2] = (Math.random() - 0.5) * 0.3
         }
       }
@@ -284,7 +297,7 @@ export function IntroLoader() {
 
       // Timeline phases (seconds, elapsed):
       const SWIRL_END = 1.1
-      const HOLD_END = SWIRL_END + 0.4
+      const HOLD_END = SWIRL_END + 1.2
       const BURST_DURATION = 0.6
 
       const clock = new THREE.Clock()
@@ -389,10 +402,6 @@ export function IntroLoader() {
       if (!doneRef.current) finish()
     }
   }, [])
-
-  if (typeof window !== 'undefined' && sessionStorage.getItem(SESSION_KEY)) {
-    return null
-  }
 
   return (
     <div
