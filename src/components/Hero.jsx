@@ -186,7 +186,33 @@ function TypedKicker({ text, start, className = '' }) {
 
 const PITCH_DESKTOP = 375
 const PITCH_MOBILE = 230
-const DRIFT_SPEED = 18 // px/s — the rail never stops (founder order)
+const DRIFT_SPEED = 52 // px/s — the rail never stops (founder order: brisker)
+
+// One rail card: black and white until CLICKED, then it reveals its color
+// (a click is a press that barely moved, so dragging the rail never triggers it).
+function CardFrame({ card, innerRef }) {
+  const [colored, setColored] = useState(false)
+  const pressRef = useRef(null)
+  return (
+    <div
+      ref={innerRef}
+      className="absolute left-1/2 top-1/2 h-[131px] w-[210px] cursor-pointer overflow-hidden rounded-[14px] border border-ink/10 bg-white shadow-[0_26px_60px_-34px_rgba(17,17,17,0.35)] will-change-transform md:h-[212px] md:w-[340px] md:rounded-[18px]"
+      onPointerDown={(e) => (pressRef.current = { x: e.clientX, y: e.clientY })}
+      onPointerUp={(e) => {
+        const p = pressRef.current
+        if (p && Math.hypot(e.clientX - p.x, e.clientY - p.y) < 6) setColored((c) => !c)
+        pressRef.current = null
+      }}
+    >
+      <img
+        src={card.src}
+        alt={card.alt}
+        className={`h-full w-full object-cover transition-[filter] duration-700 ${colored ? 'grayscale-0' : 'grayscale'}`}
+        draggable={false}
+      />
+    </div>
+  )
+}
 
 const ScreenTrack = forwardRef(function ScreenTrack(
   { mobile, offsetRef, velocityRef, bowRef },
@@ -248,13 +274,7 @@ const ScreenTrack = forwardRef(function ScreenTrack(
     >
       <div className="relative h-full w-full">
         {heroCards.map((card, i) => (
-          <div
-            key={i}
-            ref={(el) => (cardRefs.current[i] = el)}
-            className="absolute left-1/2 top-1/2 h-[131px] w-[210px] overflow-hidden rounded-[14px] border border-ink/10 bg-white shadow-[0_26px_60px_-34px_rgba(17,17,17,0.35)] will-change-transform md:h-[212px] md:w-[340px] md:rounded-[18px]"
-          >
-            <img src={card.src} alt={card.alt} className="h-full w-full object-cover" draggable={false} />
-          </div>
+          <CardFrame key={i} card={card} innerRef={(el) => (cardRefs.current[i] = el)} />
         ))}
       </div>
     </div>

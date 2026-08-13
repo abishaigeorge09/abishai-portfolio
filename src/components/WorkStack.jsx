@@ -29,15 +29,22 @@ function Folder({ p }) {
         {p.name}
       </div>
       {/* body */}
-      <div className="overflow-hidden rounded-2xl rounded-tl-none border border-ink/10 bg-cream shadow-[0_24px_60px_-20px_rgba(0,0,0,0.35)]">
-        {/* brand-art strip */}
+      <div className="overflow-hidden rounded-2xl rounded-tl-none border border-ink/10 bg-white shadow-[0_24px_60px_-20px_rgba(0,0,0,0.35)]">
+        {/* real project image (brand-art fallback if a project has no media) */}
         <div className="relative h-40 overflow-hidden bg-[var(--scene-tile)]">
-          <div data-mono-glow1 className="absolute left-[12%] top-[14%] h-2/3 w-2/3 rounded-full blur-2xl" style={{ background: hexToRgba(p.accent, 0.75) }} />
-          <div data-mono-glow2 className="absolute right-[8%] top-[28%] h-1/2 w-1/2 rounded-full blur-2xl" style={{ background: 'rgba(255,188,149,0.6)' }} />
-          <div
-            className="absolute inset-0"
-            style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px)', backgroundSize: '12px 12px' }}
-          />
+          {p.media ? (
+            <img src={p.media} alt="" className="absolute inset-0 h-full w-full object-cover object-top" loading="lazy" />
+          ) : (
+            <>
+              <div data-mono-glow1 className="absolute left-[12%] top-[14%] h-2/3 w-2/3 rounded-full blur-2xl" style={{ background: hexToRgba(p.accent, 0.75) }} />
+              <div data-mono-glow2 className="absolute right-[8%] top-[28%] h-1/2 w-1/2 rounded-full blur-2xl" style={{ background: 'rgba(255,188,149,0.6)' }} />
+              <div
+                className="absolute inset-0"
+                style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px)', backgroundSize: '12px 12px' }}
+              />
+            </>
+          )}
+          <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/55 to-transparent" />
           <span className="absolute bottom-3 left-4 font-display text-lg font-bold text-cream">{p.name}</span>
         </div>
         {/* meta */}
