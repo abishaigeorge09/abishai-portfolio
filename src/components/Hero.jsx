@@ -544,10 +544,10 @@ export function Hero() {
       <div ref={driftAvatar} className="pointer-events-none absolute inset-0 z-30">
       <div
         ref={avatarScrub}
-        className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-36 md:pb-[10svh]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-28 md:pb-[10svh]"
         style={{ transformOrigin: 'center 75%' }}
       >
-        <div ref={avatarFloat} className="relative flex h-[52svh] items-end md:h-[74svh]">
+        <div ref={avatarFloat} className="relative flex h-[60svh] items-end md:h-[74svh]">
           <div
             aria-hidden="true"
             className="absolute bottom-1 left-1/2 h-6 w-[46%] -translate-x-1/2 rounded-full md:h-9"

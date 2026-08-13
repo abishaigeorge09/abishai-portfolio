@@ -47,17 +47,21 @@ export function ExplorePill() {
   }
 
   return (
-    <div className="relative z-30 flex justify-center">
+    // Desktop only: on phones the pill crowded the avatar and the bottom nav.
+    <div className="relative z-30 hidden justify-center md:flex">
       <button
         ref={ref}
         type="button"
         onClick={scrollToNext}
         aria-label="Explore"
-        className="group -mt-[140px] flex h-[64px] w-12 flex-col items-center justify-between rounded-t-full bg-ink pb-2 pt-2.5 text-cream transition-transform duration-300 ease-spring-pill hover:-translate-y-1 md:-mt-[86px] md:h-[86px] md:w-16 md:pb-3 md:pt-4"
+        className="group -mt-[92px] flex h-[130px] w-[58px] flex-col items-center rounded-full bg-ink pt-[18px] text-cream shadow-[0_18px_40px_-18px_rgba(17,17,17,0.55)] transition-all duration-300 ease-spring-pill hover:-translate-y-1.5 hover:shadow-[0_24px_50px_-18px_rgba(17,17,17,0.65)]"
       >
-        <span className="font-display text-[10px] font-semibold uppercase tracking-[0.18em]">Explore</span>
-        <span aria-hidden="true" className="text-sm leading-none animate-bounce">
-          ↓
+        <span className="font-display text-[10px] font-semibold uppercase tracking-[0.22em]">Explore</span>
+        {/* long arrow: stem + head, slides down on hover like the reference */}
+        <span aria-hidden="true" className="mt-2.5 flex flex-col items-center transition-transform duration-500 ease-spring-pill group-hover:translate-y-1.5">
+          <svg width="12" height="30" viewBox="0 0 12 30" fill="none" className="animate-bounce [animation-duration:1.6s]">
+            <path d="M6 1v25M1.5 21.5L6 26.5l4.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </span>
       </button>
     </div>
