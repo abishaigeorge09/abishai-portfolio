@@ -32,9 +32,9 @@ export function Logo({ className = '' }) {
       className={`flex items-center gap-1.5 font-display text-lg font-bold transition-transform duration-300 hover:scale-105 ${className}`}
       aria-label={`${site.firstName} ${site.lastName} home`}
     >
-      <span>{site.firstName}</span>
-      <span className="h-2 w-2 rounded-full bg-blue" aria-hidden="true" />
-      <span>{site.lastName}</span>
+      <span>
+        {site.firstName} {site.lastName}
+      </span>
     </Link>
   )
 }

@@ -21,10 +21,8 @@
 
   body {
     margin: 0;
-    /* Flat cream backdrop (default). To switch to the warm peach->white backdrop,
-       set this to `var(--page-surface)` and add the `.page-surface` class to the
-       content sheets in App.jsx + Home.jsx (see tokens.css --surface-*). */
-    background: var(--cream);
+    /* Flat white backdrop (founder order: white core background on all pages). */
+    background: #ffffff;
     color: var(--ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;

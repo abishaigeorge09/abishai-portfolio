@@ -184,8 +184,9 @@ function TypedKicker({ text, start, className = '' }) {
 // Screen track — infinite horizontal card rail, input-driven, cursor-bowed
 // ---------------------------------------------------------------------------
 
-const PITCH_DESKTOP = 255
-const PITCH_MOBILE = 165
+const PITCH_DESKTOP = 375
+const PITCH_MOBILE = 230
+const DRIFT_SPEED = 18 // px/s — the rail never stops (founder order)
 
 const ScreenTrack = forwardRef(function ScreenTrack(
   { mobile, offsetRef, velocityRef, bowRef },
@@ -206,15 +207,15 @@ const ScreenTrack = forwardRef(function ScreenTrack(
       if (dx > half) dx -= loop
       if (dx < -half) dx += loop
       const ax = Math.abs(dx)
-      const grow = Math.max(0, (ax - (mobile ? 230 : 460)) / (mobile ? 200 : 400))
+      const grow = Math.max(0, (ax - (mobile ? 250 : 520)) / (mobile ? 210 : 420))
       const scale = 1 + Math.min(0.22, grow * 0.22)
-      const blur = Math.min(9, Math.max(0, (ax - (mobile ? 190 : 360)) / (mobile ? 180 : 360)) * 9)
-      const fade = Math.max(0, (ax - (mobile ? 400 : 880)) / (mobile ? 150 : 250))
-      // cursor bow: the rail bends like a curve whose bow follows cursor Y;
+      const blur = Math.min(9, Math.max(0, (ax - (mobile ? 210 : 420)) / (mobile ? 190 : 380)) * 9)
+      const fade = Math.max(0, (ax - (mobile ? 400 : 900)) / (mobile ? 150 : 260))
+      // permanent ARCH (the reference fan), deepened/flattened by cursor Y:
       // cards ride the parabola and tilt along its tangent
       const u = dx / halfW
-      const bowY = bow * u * u * 46
-      const bowRot = bow * u * 5
+      const bowY = bow * u * u * 90
+      const bowRot = bow * u * 8
       el.style.transform = `translate(-50%, -50%) translate(${dx}px, ${bowY}px) rotate(${bowRot}deg) scale(${scale})`
       el.style.filter = blur > 0.4 ? `blur(${blur}px)` : 'none'
       el.style.opacity = String(Math.max(0, 1 - fade))
@@ -223,14 +224,15 @@ const ScreenTrack = forwardRef(function ScreenTrack(
   }
 
   useEffect(() => {
-    applyFrame(offsetRef.current, 0)
+    applyFrame(offsetRef.current, 1)
     if (reduced) return
     const tick = (time, dtMs) => {
       const dt = Math.min(0.1, dtMs / 1000)
-      // proper exponential decay with a hard zero so the rail is truly still
+      // input velocity coasts out, but the rail itself NEVER stops: a slow
+      // constant drift keeps it alive underneath drag/wheel input
       velocityRef.current *= Math.exp(-4.2 * dt)
       if (Math.abs(velocityRef.current) < 0.5) velocityRef.current = 0
-      if (velocityRef.current !== 0) offsetRef.current += velocityRef.current * dt
+      offsetRef.current += (DRIFT_SPEED + velocityRef.current) * dt
       applyFrame(offsetRef.current, bowRef.current)
     }
     gsap.ticker.add(tick)
@@ -242,14 +244,14 @@ const ScreenTrack = forwardRef(function ScreenTrack(
     <div
       ref={layerRef}
       className="absolute inset-x-0 z-0"
-      style={{ top: mobile ? '25%' : '21%', height: mobile ? '36svh' : '41svh' }}
+      style={{ top: mobile ? '28%' : '24%', height: mobile ? '32svh' : '38svh' }}
     >
       <div className="relative h-full w-full">
         {heroCards.map((card, i) => (
           <div
             key={i}
             ref={(el) => (cardRefs.current[i] = el)}
-            className="absolute left-1/2 top-1/2 h-[275px] w-[150px] overflow-hidden rounded-[20px] border border-ink/10 bg-white shadow-[0_26px_60px_-34px_rgba(17,17,17,0.35)] will-change-transform md:h-[400px] md:w-[220px] md:rounded-[28px]"
+            className="absolute left-1/2 top-1/2 h-[131px] w-[210px] overflow-hidden rounded-[14px] border border-ink/10 bg-white shadow-[0_26px_60px_-34px_rgba(17,17,17,0.35)] will-change-transform md:h-[212px] md:w-[340px] md:rounded-[18px]"
           >
             <img src={card.src} alt={card.alt} className="h-full w-full object-cover" draggable={false} />
           </div>
@@ -274,6 +276,8 @@ export function Hero() {
   const avatarImg = useRef(null)
   const kickerLeft = useRef(null)
   const kickerRight = useRef(null)
+  const driftAvatar = useRef(null)
+  const driftKickers = useRef(null)
   const isTouch = useIsTouch()
   const [mobile, setMobile] = useState(false)
   const [firstWordDone, setFirstWordDone] = useState(false)
@@ -390,31 +394,46 @@ export function Hero() {
     }
   }, [])
 
-  // Cursor parallax (x/y drift) + cursor-Y bow on the rail.
+  // Global cursor drift: ONE smoothed cursor vector glides EVERY layer with
+  // per-layer depth (the reference moves the whole scene, slow and smooth),
+  // plus the cursor-Y arch modulation on the rail.
   useEffect(() => {
     const sec = section.current
-    const el = trackDrift.current
-    if (!sec || !el || isTouch || prefersReducedMotion()) return
-    const xTo = gsap.quickTo(el, 'x', { duration: 1.1, ease: 'power3' })
-    const yTo = gsap.quickTo(el, 'y', { duration: 1.1, ease: 'power3' })
-    const bowTo = gsap.quickTo(trackBow, 'current', { duration: 0.9, ease: 'power2' })
+    if (!sec || isTouch || prefersReducedMotion()) return
+    const layers = [
+      { el: trackDrift.current, fx: -120, fy: -40 },
+      { el: headlineWrap.current, fx: -60, fy: -20 },
+      { el: driftAvatar.current, fx: -80, fy: 18 },
+      { el: driftKickers.current, fx: -95, fy: -30 },
+    ].filter((l) => l.el)
+    const tos = layers.map((l) => ({
+      x: gsap.quickTo(l.el, 'x', { duration: 1.3, ease: 'power2' }),
+      y: gsap.quickTo(l.el, 'y', { duration: 1.3, ease: 'power2' }),
+      l,
+    }))
+    const bowTo = gsap.quickTo(trackBow, 'current', { duration: 1.1, ease: 'power2' })
     let raf = 0
     const onMove = (e) => {
       if (raf) return
       raf = requestAnimationFrame(() => {
         const r = sec.getBoundingClientRect()
+        const nx = (e.clientX - r.left) / r.width - 0.5
         const ny = (e.clientY - r.top) / r.height - 0.5
-        xTo(((e.clientX - r.left) / r.width - 0.5) * -14)
-        yTo(ny * -14)
-        // cursor high -> bow one way, low -> the other
-        bowTo(ny * -2)
+        tos.forEach(({ x, y, l }) => {
+          x(nx * l.fx)
+          y(ny * l.fy)
+        })
+        // arch: base 1, deepens toward the bottom of the screen
+        bowTo(Math.max(0.2, Math.min(1.9, 1 - ny * -1.8)))
         raf = 0
       })
     }
     const onLeave = () => {
-      xTo(0)
-      yTo(0)
-      bowTo(0)
+      tos.forEach(({ x, y }) => {
+        x(0)
+        y(0)
+      })
+      bowTo(1)
     }
     sec.addEventListener('mousemove', onMove, { passive: true })
     sec.addEventListener('mouseleave', onLeave)
@@ -422,7 +441,7 @@ export function Hero() {
       sec.removeEventListener('mousemove', onMove)
       sec.removeEventListener('mouseleave', onLeave)
       if (raf) cancelAnimationFrame(raf)
-      gsap.killTweensOf(el)
+      layers.forEach((l) => gsap.killTweensOf(l.el))
       gsap.killTweensOf(trackBow)
     }
   }, [isTouch])
@@ -482,7 +501,7 @@ export function Hero() {
       <div
         ref={headlineWrap}
         aria-hidden="true"
-        className="pointer-events-none relative z-10 mx-auto mt-24 w-full max-w-[1560px] px-4 text-center md:mt-[76px]"
+        className="pointer-events-none relative z-10 mx-auto mt-28 w-full max-w-[1560px] px-4 text-center md:mt-[120px]"
       >
         <div ref={headlineZoom} style={{ transformOrigin: 'center 30%' }}>
           <div
@@ -502,9 +521,10 @@ export function Hero() {
       </div>
 
       {/* 3. avatar, front of everything, head overlapping the title */}
+      <div ref={driftAvatar} className="pointer-events-none absolute inset-0 z-30">
       <div
         ref={avatarScrub}
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center pb-36 md:pb-[10svh]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-36 md:pb-[10svh]"
         style={{ transformOrigin: 'center 75%' }}
       >
         <div ref={avatarFloat} className="relative flex h-[42svh] items-end md:h-[74svh]">
@@ -523,21 +543,25 @@ export function Hero() {
         </div>
       </div>
 
+      </div>
+
       {/* 4. angled kickers (typed on load), measured spots from the recording */}
-      <p
-        ref={kickerLeft}
-        className="pointer-events-none absolute left-[6%] top-[34%] z-20 max-w-[8rem] rotate-[-3.5deg] text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:left-[19%] md:top-[71%] md:max-w-none md:text-[20px]"
-        style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
-      >
-        <TypedKicker text="Founder & CS Student" start={firstWordDone && introDone} />
-      </p>
-      <p
-        ref={kickerRight}
-        className="pointer-events-none absolute right-[6%] top-[38%] z-20 max-w-[8rem] rotate-[3.5deg] text-right text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:right-[26%] md:top-[71%] md:max-w-none md:text-[20px]"
-        style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
-      >
-        <TypedKicker text="Ships End to End" start={firstWordDone && introDone} />
-      </p>
+      <div ref={driftKickers} className="pointer-events-none absolute inset-0 z-20">
+        <p
+          ref={kickerLeft}
+          className="absolute left-[6%] top-[34%] max-w-[8rem] rotate-[-3.5deg] text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:left-[19%] md:top-[73%] md:max-w-none md:text-[20px]"
+          style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
+        >
+          <TypedKicker text="Founder & CS Student" start={firstWordDone && introDone} />
+        </p>
+        <p
+          ref={kickerRight}
+          className="absolute right-[6%] top-[38%] max-w-[8rem] rotate-[3.5deg] text-right text-[12px] font-extrabold uppercase tracking-[0.1em] text-ink md:right-[26%] md:top-[73%] md:max-w-none md:text-[20px]"
+          style={{ fontFamily: "'Montserrat', 'Fredoka', sans-serif" }}
+        >
+          <TypedKicker text="Ships End to End" start={firstWordDone && introDone} />
+        </p>
+      </div>
     </section>
   )
 }

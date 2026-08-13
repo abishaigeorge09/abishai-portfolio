@@ -32,6 +32,12 @@ export function ExplorePill() {
   }, [])
 
   const scrollToNext = () => {
+    // pop first (founder-approved feel), then glide down
+    if (ref.current && !prefersReducedMotion()) {
+      gsap.timeline()
+        .to(ref.current, { scale: 1.22, rotate: -4, duration: 0.16, ease: 'power2.out' })
+        .to(ref.current, { scale: 1, rotate: 0, duration: 0.3, ease: 'back.out(2.5)' })
+    }
     const target = window.innerHeight
     if (window.__lenis) {
       window.__lenis.scrollTo(target, { duration: 1.3 })
