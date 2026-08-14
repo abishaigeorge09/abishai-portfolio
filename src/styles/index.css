@@ -289,3 +289,47 @@
   84% { opacity: 1; clip-path: inset(66% 0 20% 0); transform: translateX(4px); }
   100% { opacity: 0; transform: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Rotate guard: phones held in landscape get a full-screen portrait prompt
+   (the hero composition is portrait-designed and breaks sideways). Targets
+   landscape viewports whose short side is phone-sized; tablets and desktops
+   never match. The installed PWA is additionally locked via the manifest.
+--------------------------------------------------------------------------- */
+.rotate-guard {
+  display: none;
+}
+@media (orientation: landscape) and (max-height: 480px) and (pointer: coarse) {
+  .rotate-guard {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #ffffff;
+    color: var(--ink);
+    font-family: var(--font-display);
+    text-align: center;
+  }
+  .rotate-guard p {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .rotate-guard .rotate-guard-sub {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(51, 51, 51, 0.55);
+  }
+  .rotate-guard-icon {
+    font-size: 40px;
+    line-height: 1;
+    animation: rotate-guard-spin 2.4s ease-in-out infinite;
+  }
+  @keyframes rotate-guard-spin {
+    0%, 60%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-90deg); }
+  }
+}

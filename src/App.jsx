@@ -76,6 +76,14 @@ export default function App() {
     <>
       <IntroLoader />
       <RouteMeta />
+      {/* Phones held sideways get a portrait prompt instead of a broken
+          landscape layout (CSS-only; see .rotate-guard in index.css). The
+          installed PWA is locked via the manifest's orientation field. */}
+      <div className="rotate-guard" aria-hidden="true">
+        <span className="rotate-guard-icon">↺</span>
+        <p>Please rotate your phone</p>
+        <p className="rotate-guard-sub">This site is best viewed in portrait</p>
+      </div>
       <Cursor />
       <KineticScroll />
       <Nav />
