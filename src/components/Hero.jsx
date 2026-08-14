@@ -15,6 +15,7 @@
 // The load-in waits for the intro loader's `intro:done` event (3s fallback).
 // Heights are svh, never vh (mobile browser chrome reflow).
 import { forwardRef, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { gsap, ScrollTrigger, prefersReducedMotion } from '../lib/gsap'
 import { useIsTouch } from '../lib/useIsTouch'
 import { heroCards } from '../data/heroCards'
@@ -298,6 +299,8 @@ export function Hero() {
   const kickerRight = useRef(null)
   const driftAvatar = useRef(null)
   const driftKickers = useRef(null)
+  const navigate = useNavigate()
+  const navigating = useRef(false)
   const isTouch = useIsTouch()
   const [mobile, setMobile] = useState(false)
   const [firstWordDone, setFirstWordDone] = useState(false)
@@ -344,12 +347,13 @@ export function Hero() {
   }, [introDone])
 
   // Idle float on the avatar image.
+  const idleFloatTl = useRef(null)
   useEffect(() => {
     if (prefersReducedMotion() || !avatarFloat.current) return
-    const tl = gsap
+    idleFloatTl.current = gsap
       .timeline({ repeat: -1, yoyo: true })
       .to(avatarFloat.current, { y: -5, rotate: 0.4, duration: 2.25, ease: 'sine.inOut' })
-    return () => tl.kill()
+    return () => idleFloatTl.current?.kill()
   }, [])
 
   // Spider-Verse glitch on each word swap: magenta/cyan RGB-split ghosts,
@@ -364,6 +368,29 @@ export function Hero() {
     wrap.classList.add('spidey-glitching')
     clearTimeout(surgeTimer.current)
     surgeTimer.current = setTimeout(() => wrap.classList.remove('spidey-glitching'), 700)
+  }
+
+  // Click the avatar -> glitch + punch toward the viewer, then route to
+  // About (a portrait card of him already lives at the top of that page, so
+  // the punch reads as "stepping into" it). Reduced motion: instant nav.
+  const goToAbout = () => {
+    if (navigating.current) return
+    navigating.current = true
+    if (prefersReducedMotion()) {
+      navigate('/about')
+      return
+    }
+    surge()
+    idleFloatTl.current?.pause()
+    const target = avatarFloat.current
+    if (target) {
+      gsap.set(target, { rotate: 0 })
+      gsap.timeline({ onComplete: () => navigate('/about') })
+        .to(target, { scale: 1.06, y: -10, duration: 0.16, ease: 'power2.out' })
+        .to(target, { scale: 1.35, y: 6, opacity: 0, duration: 0.4, ease: 'power2.in' }, 0.16)
+    } else {
+      setTimeout(() => navigate('/about'), 500)
+    }
   }
 
   // Input: drag + horizontal wheel steer the rail; vertical wheel scrolls.
@@ -557,11 +584,21 @@ export function Hero() {
           />
           {/* Spider-Verse glitch stack: base + RGB-split ghosts + slice bands.
               All copies share the cutout; the ghosts/slices only show while
-              .spidey-glitching is on the wrapper (word-swap moments). */}
-          <div ref={avatarImg} className="spidey-wrap relative h-full">
+              .spidey-glitching is on the wrapper (word-swap moments). Also
+              the click target that launches into the About page. */}
+          <div
+            ref={avatarImg}
+            role="button"
+            tabIndex={0}
+            aria-label="Go to About"
+            data-cursor="view"
+            onClick={goToAbout}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), goToAbout())}
+            className="spidey-wrap pointer-events-auto relative h-full cursor-pointer"
+          >
             <img
               src="/assets/img/avatar-anime.webp"
-              alt=""
+              alt="Abishai Gosula"
               className="spidey-base relative block h-full w-auto select-none"
               draggable={false}
             />
