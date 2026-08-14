@@ -352,16 +352,18 @@ export function Hero() {
     return () => tl.kill()
   }, [])
 
-  // Surge flash: solid brand-blue silhouette at each word swap (ref flashes
-  // red; blue is this site's accent). Filter chain approximates #2E54FE.
+  // Spider-Verse glitch on each word swap: magenta/cyan RGB-split ghosts,
+  // choppy slice displacement and jitter (see .spidey-* in index.css).
+  const surgeTimer = useRef(null)
   const surge = () => {
     if (prefersReducedMotion() || !avatarImg.current) return
-    const el = avatarImg.current
-    const blue =
-      'brightness(0) saturate(100%) invert(28%) sepia(96%) saturate(4000%) hue-rotate(230deg) brightness(100%)'
-    gsap.timeline()
-      .set(el, { filter: blue })
-      .to(el, { filter: 'none', duration: 0.32, ease: 'power2.out', delay: 0.2 })
+    const wrap = avatarImg.current
+    wrap.classList.remove('spidey-glitching')
+    // force a reflow so re-adding the class restarts the CSS animations
+    void wrap.offsetWidth
+    wrap.classList.add('spidey-glitching')
+    clearTimeout(surgeTimer.current)
+    surgeTimer.current = setTimeout(() => wrap.classList.remove('spidey-glitching'), 700)
   }
 
   // Input: drag + horizontal wheel steer the rail; vertical wheel scrolls.
@@ -553,13 +555,25 @@ export function Hero() {
             className="absolute bottom-1 left-1/2 h-6 w-[46%] -translate-x-1/2 rounded-full md:h-9"
             style={{ background: 'radial-gradient(ellipse, rgba(17,17,17,0.28), rgba(17,17,17,0) 72%)' }}
           />
-          <img
-            ref={avatarImg}
-            src="/assets/img/avatar-anime.webp"
-            alt=""
-            className="relative block h-full w-auto select-none"
-            draggable={false}
-          />
+          {/* Spider-Verse glitch stack: base + RGB-split ghosts + slice bands.
+              All copies share the cutout; the ghosts/slices only show while
+              .spidey-glitching is on the wrapper (word-swap moments). */}
+          <div ref={avatarImg} className="spidey-wrap relative h-full">
+            <img
+              src="/assets/img/avatar-anime.webp"
+              alt=""
+              className="spidey-base relative block h-full w-auto select-none"
+              draggable={false}
+            />
+            <img src="/assets/img/avatar-anime.webp" alt="" aria-hidden="true" draggable={false}
+              className="spidey-ghost spidey-magenta absolute left-0 top-0 h-full w-auto select-none" />
+            <img src="/assets/img/avatar-anime.webp" alt="" aria-hidden="true" draggable={false}
+              className="spidey-ghost spidey-cyan absolute left-0 top-0 h-full w-auto select-none" />
+            <img src="/assets/img/avatar-anime.webp" alt="" aria-hidden="true" draggable={false}
+              className="spidey-slice spidey-slice-a absolute left-0 top-0 h-full w-auto select-none" />
+            <img src="/assets/img/avatar-anime.webp" alt="" aria-hidden="true" draggable={false}
+              className="spidey-slice spidey-slice-b absolute left-0 top-0 h-full w-auto select-none" />
+          </div>
         </div>
       </div>
 

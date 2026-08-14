@@ -214,3 +214,78 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Spider-Verse avatar glitch (Hero): fired on each headline word swap by
+   toggling .spidey-glitching on .spidey-wrap. Magenta/cyan RGB-split ghosts,
+   two clip-path slice bands that shear sideways, and a choppy jitter on the
+   base. steps(1) keeps every move a hard cut, comic-print style.
+--------------------------------------------------------------------------- */
+.spidey-ghost,
+.spidey-slice {
+  opacity: 0;
+  pointer-events: none;
+}
+.spidey-magenta {
+  filter: sepia(1) saturate(9) hue-rotate(275deg) brightness(1.05);
+}
+.spidey-cyan {
+  filter: sepia(1) saturate(9) hue-rotate(155deg) brightness(1.1);
+}
+.spidey-glitching .spidey-base {
+  animation: spidey-base 0.62s steps(1) both;
+}
+.spidey-glitching .spidey-magenta {
+  animation: spidey-magenta 0.62s steps(1) both;
+}
+.spidey-glitching .spidey-cyan {
+  animation: spidey-cyan 0.62s steps(1) both;
+}
+.spidey-glitching .spidey-slice-a {
+  animation: spidey-slice-a 0.62s steps(1) both;
+}
+.spidey-glitching .spidey-slice-b {
+  animation: spidey-slice-b 0.62s steps(1) both;
+}
+@keyframes spidey-base {
+  0% { transform: translate(2px, 0) skewX(0.6deg); }
+  18% { transform: translate(-3px, 1px) skewX(-1deg); }
+  34% { transform: translate(1px, -2px); }
+  52% { transform: translate(-2px, 0) skewX(0.8deg); }
+  70% { transform: translate(1px, 1px); }
+  100% { transform: none; }
+}
+@keyframes spidey-magenta {
+  0% { opacity: 0.85; transform: translate(-7px, 2px); }
+  18% { opacity: 0.7; transform: translate(6px, -2px); }
+  34% { opacity: 0.9; transform: translate(-10px, 0); }
+  52% { opacity: 0.6; transform: translate(5px, 3px); }
+  70% { opacity: 0.75; transform: translate(-4px, -1px); }
+  88% { opacity: 0.4; transform: translate(2px, 0); }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes spidey-cyan {
+  0% { opacity: 0.85; transform: translate(7px, -2px); }
+  18% { opacity: 0.7; transform: translate(-6px, 2px); }
+  34% { opacity: 0.9; transform: translate(10px, 1px); }
+  52% { opacity: 0.6; transform: translate(-5px, -3px); }
+  70% { opacity: 0.75; transform: translate(4px, 1px); }
+  88% { opacity: 0.4; transform: translate(-2px, 0); }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes spidey-slice-a {
+  0% { opacity: 1; clip-path: inset(18% 0 66% 0); transform: translateX(-14px); }
+  22% { opacity: 1; clip-path: inset(30% 0 52% 0); transform: translateX(11px); }
+  44% { opacity: 1; clip-path: inset(10% 0 78% 0); transform: translateX(-8px); }
+  66% { opacity: 1; clip-path: inset(42% 0 44% 0); transform: translateX(13px); }
+  84% { opacity: 1; clip-path: inset(24% 0 62% 0); transform: translateX(-5px); }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes spidey-slice-b {
+  0% { opacity: 1; clip-path: inset(62% 0 22% 0); transform: translateX(12px); }
+  22% { opacity: 1; clip-path: inset(74% 0 12% 0); transform: translateX(-10px); }
+  44% { opacity: 1; clip-path: inset(56% 0 30% 0); transform: translateX(7px); }
+  66% { opacity: 1; clip-path: inset(80% 0 8% 0); transform: translateX(-12px); }
+  84% { opacity: 1; clip-path: inset(66% 0 20% 0); transform: translateX(4px); }
+  100% { opacity: 0; transform: none; }
+}
