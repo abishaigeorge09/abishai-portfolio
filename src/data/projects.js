@@ -19,7 +19,7 @@ export const projects = [
     challenge:
       'Unify fragmented coaching tools into one dashboard with a Claude-powered synthesis layer. Won SportsTech 183; Most Innovative Technology, Collider Cup XVIII; accepted to Berkeley SkyDeck Pad-13 (Batch 22).',
     media: '/assets/img/projects/synth.jpg',
-    link: null,
+    link: 'https://synthsports.co',
   },
   {
     slug: 'gmv-live',
@@ -36,7 +36,7 @@ export const projects = [
     challenge:
       'Marketplace connecting TikTok Shop brands with live shopping hosts; booking, escrow, real-time analytics. 2nd Place plus People\'s Choice, Collider Cup XVIII; Berkeley SkyDeck Pad-13 (Batch 23).',
     media: '/assets/img/projects/gmv.jpg',
-    link: null,
+    link: 'https://gmv-live.vercel.app',
   },
   {
     slug: 'benji',
@@ -53,7 +53,7 @@ export const projects = [
     challenge:
       'POV-first AI tennis coaching on Ray-Ban Meta smart glasses. On-device pose detection (40/40 frames on benchmark), TrackNet ball tracking, biomechanics grading, real-time audio feedback. Integrated Meta DAT SDK.',
     media: '/assets/img/projects/benji.jpg',
-    link: null,
+    link: 'https://benji-tennis.vercel.app',
   },
   {
     slug: 'atlitos',
@@ -87,7 +87,7 @@ export const projects = [
     challenge:
       'Parent company and product studio. Custom software plus training and employing young engineers from Andhra Pradesh.',
     media: '/assets/img/projects/elsheph.jpg',
-    link: 'https://jobsudarshan.com',
+    link: 'https://elsheph.com',
   },
   {
     slug: 'aiot-air-hockey',
